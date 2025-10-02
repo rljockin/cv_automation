@@ -1,0 +1,715 @@
+================================================================================
+COMPREHENSIVE RESUMÉ ANALYSIS REPORT
+Network Folder - Deep Structural Examination
+================================================================================
+Generated: 2025-10-01 12:23:09
+Total Resumés Analyzed (DOCX): 539
+Total Resumés Found (All): 1089
+================================================================================
+
+EXECUTIVE SUMMARY
+--------------------------------------------------------------------------------
+
+This report analyzes 539 Resumé DOCX files.
+The analysis extracts formatting, structure, tables, colors, fonts, and tone.
+This provides the complete blueprint for automated Resumé generation.
+
+
+================================================================================
+FILE FORMAT BREAKDOWN
+================================================================================
+
+DOCX files (analyzed): 540
+PDF files (counted): 549
+Total: 1089
+
+
+================================================================================
+TYPOGRAPHY & FONT ANALYSIS
+================================================================================
+
+Font Usage (Top 20):
+----------------------------------------
+  Calibri                        :    41 occurrences
+  Corbel                         :    13 occurrences
+  Tahoma                         :     6 occurrences
+  Arial                          :     4 occurrences
+  Segoe UI                       :     3 occurrences
+
+
+Font Sizes Used (Top 15):
+----------------------------------------
+    14.0 pt :   871 occurrences
+    10.0 pt :   587 occurrences
+    18.0 pt :   422 occurrences
+    16.0 pt :   269 occurrences
+    24.0 pt :   157 occurrences
+    11.0 pt :   117 occurrences
+    22.0 pt :   103 occurrences
+    12.0 pt :     3 occurrences
+    10.5 pt :     3 occurrences
+
+
+================================================================================
+COLOR SCHEME ANALYSIS
+================================================================================
+
+Colors Used (RGB Values):
+----------------------------------------
+  D07E1F               :   930 times
+  000000               :    55 times
+  808080               :    19 times
+  455560               :    16 times
+  00929F               :     6 times
+  D07D1F               :     4 times
+  767171               :     1 times
+  3B3838               :     1 times
+
+
+================================================================================
+TABLE STRUCTURE ANALYSIS
+================================================================================
+
+Table Count Distribution:
+----------------------------------------
+  0 table(s) : 5 Resumés
+  2 table(s) : 1 Resumés
+  3 table(s) : 18 Resumés
+  4 table(s) : 49 Resumés
+  5 table(s) : 70 Resumés
+  6 table(s) : 84 Resumés
+  7 table(s) : 91 Resumés
+  8 table(s) : 83 Resumés
+  9 table(s) : 59 Resumés
+  10 table(s) : 37 Resumés
+  11 table(s) : 14 Resumés
+  12 table(s) : 14 Resumés
+  13 table(s) : 7 Resumés
+  14 table(s) : 3 Resumés
+  15 table(s) : 1 Resumés
+  17 table(s) : 3 Resumés
+
+
+================================================================================
+DETAILED STRUCTURE EXAMPLES (First 20 Resumés)
+================================================================================
+
+
+1. Abdelhasib, Eslam
+   File: Resume_Synergie projectmanagement_Eslam Abdelhasib (gemeente Utrecht).docx
+   Paragraphs: 10
+   Tables: 5
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.69" B:1.18" L:0.75" R:0.75"
+
+   First Page Content:
+     1. Eslam Abdelhasib
+        Style: Headline | Align: None
+     2. Sassenheim
+        Style: Normal | Align: None
+     3. 1979
+        Style: Normal | Align: None
+
+   Table Structures:
+     Table 1: 13 rows × 2 cols
+       Row 1: Werkervaring | Werkervaring
+       Row 2: 2019 – heden | P-Vision Consulting
+       Row 3:  | Zelfstandig ondernemer
+     Table 2: 18 rows × 2 cols
+       Row 1: Jun ’23-Dec ‘23 | Gebiedsontwikkeling /Woningbouwprojecten, Gemeente Zaanstad
+       Row 2:  | Projectplanner
+       Row 3:  | Verzamelen van voortgangsinformatie en het verwerken hiervan in Primavera voor woningbouwprojecten.
+
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+2. Abdelhasib, Eslam
+   File: Resume_Synergie projectmanagement_Eslam Abdelhasib.docx
+   Paragraphs: 12
+   Tables: 5
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.69" B:1.18" L:0.75" R:0.75"
+
+   First Page Content:
+     1. Eslam Abdelhasib
+        Style: Headline | Align: None
+     2. Sassenheim
+        Style: Normal | Align: None
+     3. 1979
+        Style: Normal | Align: None
+
+   Table Structures:
+     Table 1: 31 rows × 2 cols
+       Row 1: Werkervaring | Werkervaring
+       Row 2: 2019 – heden | P-Vision Consulting
+       Row 3:  | Zelfstandig ondernemer
+     Table 2: 2 rows × 2 cols
+       Row 1: 2001 – 2019 | Diverse bedrijven
+       Row 2:  | Projectbeheersingsmanager Trademark Content voor Lighthouse IP Group (Jul ’17 – Nov ’19)
+Projectmana
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+3. Accord, Monnique
+   File: Resumé_Synergie projectmanagement_Monnique Accord.docx
+   Paragraphs: 16
+   Tables: 8
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.69" B:1.18" L:0.75" R:0.75"
+
+   First Page Content:
+     1. Monnique Accord
+        Style: Headline | Align: None
+     2. Almere
+        Style: Normal | Align: None
+     3. 1974
+        Style: Normal | Align: None
+
+   Table Structures:
+     Table 1: 2 rows × 1 cols
+       Row 1: Profiel
+       Row 2: Na meer dan 10 jaar werkervaring als Management assistente heeft Monnique in 2020 besloten om zich b
+     Table 2: 13 rows × 2 cols
+       Row 1: Werkervaring | Werkervaring
+       Row 2: 2022 – heden | Support bij Accord
+       Row 3:  | Zelfstandig ondernemer
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+4. Adrichem van, Bert
+   File: Resumé_Synergie projectmanagement_ProRail_Bert_van_Adrichem.docx
+   Paragraphs: 18
+   Tables: 7
+   Sections: 2
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.97" B:0.98" L:0.75" R:0.75"
+
+   First Page Content:
+     1. Bert van Adrichem
+        Style: 1 line 1 page | Align: None
+     2. Utrecht
+        Style: Normal | Align: None
+     3. Wateringen
+        Style: Normal | Align: None
+
+   Table Structures:
+     Table 1: 2 rows × 1 cols
+       Row 1: Profiel
+       Row 2: Bert heeft meer dan 20 jaar ervaring op het gebied van Ecologie en Vergunningen en dan voornamelijk 
+     Table 2: 6 rows × 2 cols
+       Row 1: Functie-eisen | Voldoet
+       Row 2: Een afgeronde HBO- of WO opleiding richting planologie / ruimtelijk bestuursrecht. | √
+       Row 3: Minimaal 4 jaar relevante werkervaring. | √
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+5. Akcay, Sercan
+   File: Resumé_Synergie projectmanagement_Sercan Akcay.docx
+   Paragraphs: 12
+   Tables: 4
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.69" B:1.18" L:0.75" R:0.75"
+
+   First Page Content:
+     1. Sercan Akcay
+        Style: Headline | Align: None
+     2. Amsterdam
+        Style: Normal | Align: None
+     3. 1994
+        Style: Normal | Align: None
+
+   Table Structures:
+     Table 1: 2 rows × 1 cols
+       Row 1: Profiel
+       Row 2: Sercan is sinds 2018 actief als Procescoördinator binnen infrastructurele tenders en projecten in ui
+     Table 2: 5 rows × 3 cols
+       Row 1: Werkervaring | Werkervaring | 2018 – heden
+       Row 2: Diverse projecten en tenders, Dura Vermeer Landelijke projecten | Diverse projecten en tenders, Dura Vermeer Landelijke projecten | 
+       Row 3: Procescoördinator | Procescoördinator | 
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+6. Akkerman, Machiel
+   File: Resumé_synergie projectmanagement_Machiel Akkerman.docx
+   Paragraphs: 14
+   Tables: 7
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.69" B:1.18" L:0.75" R:0.75"
+
+   First Page Content:
+     1. Machiel Akkerman
+        Style: Headline | Align: None
+     2. ‘s-Hertogenbosch
+        Style: Normal | Align: None
+     3. 1980
+        Style: Normal | Align: None
+
+   Table Structures:
+     Table 1: 2 rows × 1 cols
+       Row 1: Profiel
+       Row 2: Breed inzetbaar door ruime kennis en ervaring op het gebied van het aanleg-, renovatie- en onderhoud
+     Table 2: 16 rows × 2 cols
+       Row 1: Werkervaring | Werkervaring
+       Row 2: 2015 – heden | MACB
+       Row 3:  | Zelfstandig ondernemer
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+7. Alberda, Romy
+   File: Resumé_Synergie projectmanagement_Romy Alberda.docx
+   Paragraphs: 33
+   Tables: 14
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.69" B:1.18" L:0.75" R:0.75"
+
+   First Page Content:
+     1. Romy Alberda
+        Style: Headline | Align: None
+     2. Voorhout
+        Style: Normal | Align: None
+     3. 1989
+        Style: Normal | Align: None
+
+   Table Structures:
+     Table 1: 2 rows × 1 cols
+       Row 1: Profiel
+       Row 2: Romy is een ondernemende en ambitieuze professional. Vanuit haar juridische achtergrond is ze de tec
+     Table 2: 4 rows × 2 cols
+       Row 1: Werkervaring | Werkervaring
+       Row 2: 2023 – heden | APE Tech
+       Row 3:  | Zelfstandig ondernemer
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+8. Alblas, Sharon
+   File: Resumé_Synergie projectmanagement_Sharon Alblas.docx
+   Paragraphs: 14
+   Tables: 6
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.69" B:1.18" L:0.75" R:0.75"
+
+   First Page Content:
+     1. Sharon Alblas
+        Style: Headline | Align: None
+     2. Spijkenisse
+        Style: Normal | Align: None
+
+   Table Structures:
+     Table 1: 2 rows × 1 cols
+       Row 1: Profiel
+       Row 2: Sharon is een ervaren Document Controller / Document Beheerder die de afgelopen jaren aan diverse in
+     Table 2: 31 rows × 2 cols
+       Row 1: Werkervaring | Werkervaring
+       Row 2: 2019 – heden | Alblas Projects
+       Row 3:  | Vennoot
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+9. Aldenberg, Daan
+   File: Resumé_Synergie projectmanagement_Daan Aldenberg.docx
+   Paragraphs: 18
+   Tables: 7
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.69" B:1.18" L:0.75" R:0.75"
+
+   First Page Content:
+     1. Daan Aldenberg
+        Style: Headline | Align: None
+     2. Utrecht
+        Style: Normal | Align: None
+     3. 1983
+        Style: Normal | Align: None
+
+   Table Structures:
+     Table 1: 2 rows × 1 cols
+       Row 1: Profiel
+       Row 2: Daan is een projectmanager die in veel verschillende rollen nzetbaar is. Hij houdt van een uitvoerin
+     Table 2: 6 rows × 2 cols
+       Row 1:  | 
+       Row 2: 2021 – heden | Zelfstandig ondernemer
+       Row 3:  | Enkele projecten:
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+10. Alderliesten, Marcel
+   File: Resumé_Synergie projectmanagement_Marcel Alderiesten 2025.docx
+   Paragraphs: 15
+   Tables: 6
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.69" B:1.18" L:0.75" R:0.75"
+
+   First Page Content:
+     1. Marcel Alderliesten
+        Style: Headline | Align: None
+     2. Ouddorp
+        Style: Normal | Align: None
+     3. Geboortejaar
+        Style: Normal | Align: None
+
+   Table Structures:
+     Table 1: 2 rows × 1 cols
+       Row 1: Profiel
+       Row 2: Marcel is een ervaren (interim) manager. Hij heeft ruime ervaring met projecten en programma’s bij o
+     Table 2: 34 rows × 2 cols
+       Row 1: Werkervaring | Werkervaring
+       Row 2: 2004 – Heden | ALventura Management B.V.
+       Row 3:  | Zelfstandig ondernemer
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+11. Ali, Asiya
+   File: Resumé_Synergie projectmanagement_Asiya Ali.docx
+   Paragraphs: 19
+   Tables: 10
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.69" B:1.18" L:0.75" R:0.75"
+
+   First Page Content:
+     1. Asiya Ali
+        Style: Headline | Align: None
+     2. Diemen / Delft
+        Style: Normal | Align: None
+     3. 1986
+        Style: Normal | Align: None
+
+   Table Structures:
+     Table 1: 2 rows × 1 cols
+       Row 1: Profiel
+       Row 2: Asiya is beschikt over 7 jaar werkervaring op het gebied van BIM, digitalisering, planningsmanagemen
+     Table 2: 16 rows × 2 cols
+       Row 1: Werkervaring | Werkervaring
+       Row 2: 2022 – heden | Gosja Trade
+       Row 3:  | Zelfstandig ondernemer
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+12. Alkan, Abdullah
+   File: Resumé_Synergie projectmanagement_Abdullah Alkan.docx
+   Paragraphs: 13
+   Tables: 8
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.69" B:1.18" L:0.75" R:0.75"
+
+   First Page Content:
+     1. Abdullah Alkan
+        Style: Headline | Align: None
+     2. Goesbeek
+        Style: Normal | Align: None
+     3. 1987
+        Style: Normal | Align: None
+
+   Table Structures:
+     Table 1: 2 rows × 1 cols
+       Row 1: Profiel
+       Row 2: Abdullah heeft meer dan 10 jaar werkervaring binnen de civiele aannemerij. Hij is begonnen in de wer
+     Table 2: 13 rows × 2 cols
+       Row 1: Werkervaring | Werkervaring
+       Row 2: 2022 – heden | Milestone Projectbeheersing
+       Row 3:  | Zelfstandig ondernemer
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+13. Amat, Ray
+   File: Resumé_Synergie projectmanagement_Ray Amat.docx
+   Paragraphs: 15
+   Tables: 7
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.69" B:1.18" L:0.75" R:0.75"
+
+   First Page Content:
+     1. Ray Amat
+        Style: Headline | Align: None
+     2. Rotterdam
+        Style: Normal | Align: None
+     3. 1995
+        Style: Normal | Align: None
+
+   Table Structures:
+     Table 1: 2 rows × 1 cols
+       Row 1: Profiel
+       Row 2: Ray is een veelzijdige professional met ervaring op het gebied van Project-/Procescoördinatie en Mai
+     Table 2: 16 rows × 2 cols
+       Row 1: Werkervaring | Werkervaring
+       Row 2: 2024 – heden | Amat Projects
+       Row 3:  | Zelfstandig ondernemer
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+14. Amatsari, Jerald
+   File: Resume_Synergie projectmanagement_Jerald Amatsari.docx
+   Paragraphs: 17
+   Tables: 8
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.69" B:1.18" L:0.75" R:0.75"
+
+   First Page Content:
+     1. Jerald Amatsari
+        Style: Headline | Align: None
+     2. Barendrecht
+        Style: Normal | Align: None
+     3. 1989
+        Style: Normal | Align: None
+
+   Table Structures:
+     Table 1: 2 rows × 1 cols
+       Row 1: Profiel
+       Row 2: Jerald is sinds 2016 actief binnen de civiele techniek op het gebied van projectbeheersing, met name
+     Table 2: 13 rows × 2 cols
+       Row 1: Werkervaring | Werkervaring
+       Row 2: 2022 – heden | Nexus Process
+       Row 3:  | Zelfstandig ondernemer
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+15. Ameri, Milad
+   File: Resumé_Synergie projectmanagement_Milad Ameri.docx
+   Paragraphs: 16
+   Tables: 9
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.69" B:1.18" L:0.75" R:0.75"
+
+   First Page Content:
+     1. Milad Ameri
+        Style: Headline | Align: None
+     2. Den Haag
+        Style: Normal | Align: None
+     3. 1983
+        Style: Normal | Align: None
+
+   Table Structures:
+     Table 1: 2 rows × 1 cols
+       Row 1: Profiel
+       Row 2: Milad heeft een bouwkundige opleidingsachtergrond en is sinds 2016 actief als zelfstandig ondernemer
+     Table 2: 8 rows × 2 cols
+       Row 1: Werkervaring | Werkervaring
+       Row 2: 2016 – heden | Ad Nova Bouw / Allround Assetmanagement
+       Row 3:  | DGA
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+16. Andour, Farid
+   File: Resumé_Synergie projectmanagement_Farid Andour.docx
+   Paragraphs: 17
+   Tables: 9
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.69" B:1.18" L:0.75" R:0.75"
+
+   First Page Content:
+     1. Farid Andour
+        Style: Headline | Align: None
+     2. Zoetermeer
+        Style: Normal | Align: None
+     3. 1975
+        Style: Normal | Align: None
+
+   Table Structures:
+     Table 1: 2 rows × 1 cols
+       Row 1: Profiel
+       Row 2: Farid is een ervaren planningsmanagementprofessional met 25 jaar werkervaring binnen bouw-/renovatie
+     Table 2: 4 rows × 2 cols
+       Row 1: Werkervaring | Werkervaring
+       Row 2: 2013 – heden | iLCASi Consultancy
+       Row 3:  | Zelfstandig ondernemer
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+17. Arduin partners tbv RWS
+   File: Resumé_Synergie Ingenieurs_Marijke van Tintelen_20200703.docx
+   Paragraphs: 25
+   Tables: 6
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.38" B:0.89" L:1.57" R:0.98"
+
+   First Page Content:
+     1. Marijke van Tintelen
+        Style: Naam | Align: None
+     2. Amstelveen
+        Style: Naam | Align: None
+     3. 1982
+        Style: Naam | Align: None
+     4. Profiel
+        Style: Prestaties | Align: None
+     5. Marijke beschikt over een ambitieuze en enthousiaste persoonlijkheid en is altijd op zoek naar mogel
+        Style: Opleiding/cursus | Align: None
+
+   Table Structures:
+     Table 1: 1 rows × 2 cols
+       Row 1: 2020 – heden | Adjusting consulting B.V.
+Senior Consultant Inkoop- en Contractmanagement
+     Table 2: 2 rows × 2 cols
+       Row 1: 2016 – 2020 | Waterschap Zuiderzeeland
+       Row 2:  | Contractmanager
+Verantwoordelijk voor het verlenen van opdrachten aan ingenieursbureaus, alsmede de 
+   Sections Found: Werkervaring, Opleiding, Cursussen
+   Tone: Formal=0 Technical=1 ActionVerbs=0
+
+
+18. Arduin partners tbv RWS
+   File: Resumé_Synergie Ingenieurs_Stefan Spekreijse_20200702.docx
+   Paragraphs: 23
+   Tables: 8
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.38" B:0.89" L:1.57" R:0.98"
+
+   First Page Content:
+     1. Stefan Spekreijse
+        Style: Naam | Align: None
+     2. Sneek
+        Style: Naam | Align: None
+     3. 1967
+        Style: Naam | Align: None
+     4. Profiel
+        Style: Prestaties | Align: None
+     5. Stefan is een ervaren contractmanager die bij veel overheden heeft gewerkt waaronder RWS. Hij is bek
+        Style: Opleiding/cursus | Align: None
+
+   Table Structures:
+     Table 1: 1 rows × 2 cols
+       Row 1: 2010 – heden | Adjust Consulting
+Sr. Consultant / Business-unit Infra Manager
+Bij de klant word ik met name als con
+     Table 2: 2 rows × 2 cols
+       Row 1: 2007 - 2012 | Rijkswaterstaat Dienst Midden en Noord Nederland
+       Row 2:  | Contractmanager / Senior Inkoopadviseur
+Bij RWS Dienst Midden Nederland als contractmanager verantwo
+   Sections Found: Werkervaring, Opleiding, Cursussen
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+19. Arends, Robbert
+   File: Resume_Synergie projectmanagement_Robbert Arends.docx
+   Paragraphs: 16
+   Tables: 7
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.69" B:1.18" L:0.75" R:0.75"
+
+   First Page Content:
+     1. Robbert Arends
+        Style: Headline | Align: None
+     2. Nijkerk
+        Style: Normal | Align: None
+     3. 1980
+        Style: Normal | Align: None
+
+   Table Structures:
+     Table 1: 2 rows × 1 cols
+       Row 1: Profiel
+       Row 2: Robbert heeft meer dan 20 jaar werkervaring  t.b.v. railprojecten. Na zijn studie is hij gestart als
+     Table 2: 12 rows × 2 cols
+       Row 1: Werkervaring | Werkervaring
+       Row 2: 2018 – heden | ArendsRail B.V.
+       Row 3:  | Eigenaar
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+20. Aschman, Guido
+   File: Resumé_Synergie projectmanagement_Guido Aschman.docx
+   Paragraphs: 17
+   Tables: 9
+   Sections: 1
+   Page Size: 8.27" × 11.69"
+   Margins: T:1.69" B:1.18" L:0.75" R:0.75"
+
+   First Page Content:
+     1. Guido Aschman
+        Style: Headline | Align: None
+     2. Oosterwijk
+        Style: Normal | Align: None
+     3. 1980
+        Style: Normal | Align: None
+
+   Table Structures:
+     Table 1: 2 rows × 1 cols
+       Row 1: Profiel
+       Row 2: Guido is een ervaren Technisch Manager / Projectleider met meer dan 20 jaar werkervaring binnen infr
+     Table 2: 7 rows × 2 cols
+       Row 1: Werkervaring | Werkervaring
+       Row 2: 2019 – Heden | GWA Management & Advies
+       Row 3:  | Zelfstandig ondernemer
+   Tone: Formal=0 Technical=0 ActionVerbs=0
+
+
+
+================================================================================
+PAGE SETUP & MARGINS ANALYSIS
+================================================================================
+
+Average Page Size: 8.27" × 11.69" (A4 = 8.27" × 11.69")
+
+Average Margins:
+  Top: 1.63"
+  Bottom: 1.11"
+  Left: 0.93"
+  Right: 0.80"
+
+
+================================================================================
+TONE OF VOICE & WRITING STYLE
+================================================================================
+
+Average per Resumé:
+  Formal indicators: 0.2
+  Technical terms: 0.2
+  Action verbs: 0.2
+  Bullet points: 0.0
+
+Writing Style Characteristics:
+  - Professional and formal tone
+  - Project-focused (not personal achievements)
+  - Technical terminology used
+  - Action-oriented language
+  - Bullet points for clarity
+  - Chronological order (recent first)
+
+
+================================================================================
+RECOMMENDATIONS FOR RESUMÉ GENERATION
+================================================================================
+
+1. PRIMARY FONT:
+   Use: Calibri (found in 41 instances)
+
+2. FONT SIZES:
+   14.0 pt - Used 871 times
+   10.0 pt - Used 587 times
+   18.0 pt - Used 422 times
+
+3. TABLE STRUCTURE:
+   Most common: 7 table(s) per Resumé
+   (91 Resumés use this pattern)
+
+4. COLOR SCHEME:
+   Use documented RGB colors
+
+5. PAGE SETUP:
+   A4 page size (8.27" × 11.69")
+   Standard margins as analyzed
+
+6. CONTENT STRUCTURE:
+   - Header: Name, Location, Birth Year
+   - Main section: Werkervaring (Work Experience)
+   - Projects listed under each position
+   - Education & Training section
+   - Optional: Skills, Languages
+
+================================================================================
+END OF REPORT
+================================================================================
