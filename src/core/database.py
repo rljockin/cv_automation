@@ -186,8 +186,18 @@ class DatabaseManager:
     
     def create_tables(self):
         """Create all tables if they don't exist"""
-        Base.metadata.create_all(self.engine)
-        self.logger.info("Database tables created/verified")
+        # Use checkfirst=True to avoid race conditions with multiple workers
+        # This is especially important with Gunicorn which spawns multiple workers
+        try:
+            Base.metadata.create_all(self.engine, checkfirst=True)
+            self.logger.info("Database tables created/verified")
+        except Exception as e:
+            # If table already exists (race condition), that's fine
+            if "already exists" in str(e).lower():
+                self.logger.info("Database tables already exist (race condition handled)")
+            else:
+                self.logger.error(f"Error creating database tables: {e}")
+                raise
     
     @contextmanager
     def session_scope(self):

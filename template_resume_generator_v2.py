@@ -239,9 +239,13 @@ class TemplateResumeGeneratorV2:
         display_last = self._normalize_last_name(last)
         
         if not display_first and full_name:
-            display_first = self._normalize_first_name(full_name.split()[0])
+            name_parts = full_name.split() if full_name else []
+            if name_parts:
+                display_first = self._normalize_first_name(name_parts[0])
         if not display_last and full_name:
-            display_last = self._normalize_last_name(full_name.split()[-1])
+            name_parts = full_name.split() if full_name else []
+            if name_parts:
+                display_last = self._normalize_last_name(name_parts[-1])
         
         display_name = " ".join(part for part in [display_first, display_last] if part)
         return display_name or (full_name or "Unknown Name")
@@ -429,7 +433,7 @@ class TemplateResumeGeneratorV2:
                         period_start = base_start_date
                         period_end = base_end_date
                     project_is_current = 'heden' in str(project_period).lower() or 'present' in str(project_period).lower()
-                else:
+            else:
                     period_start = base_start_date
                     period_end = base_end_date
                     project_is_current = base_is_current
@@ -544,35 +548,35 @@ class TemplateResumeGeneratorV2:
     def _render_responsibilities(self, right_cell, responsibilities: List[str], position: str, company: str) -> None:
         """Render bullet list of responsibilities or defaults."""
         from docx.enum.text import WD_TAB_ALIGNMENT
-        from docx.shared import Cm
+        from docx.shared import Cm, Pt
         
         cleaned_responsibilities = [resp for resp in responsibilities if resp]
         if cleaned_responsibilities:
             for resp in cleaned_responsibilities:
-                detailed_resp = self._expand_responsibility(resp, position, company)
-                detailed_resp = self._ensure_period_at_end(detailed_resp)
-                resp_para = right_cell.add_paragraph()
-                tab_stops = resp_para.paragraph_format.tab_stops
-                tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.LEFT)
-                resp_para.paragraph_format.left_indent = Cm(0.5)
-                resp_para.paragraph_format.first_line_indent = Cm(-0.5)
-                
+                            detailed_resp = self._expand_responsibility(resp, position, company)
+                            detailed_resp = self._ensure_period_at_end(detailed_resp)
+                            resp_para = right_cell.add_paragraph()
+                            tab_stops = resp_para.paragraph_format.tab_stops
+                            tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.LEFT)
+                            resp_para.paragraph_format.left_indent = Cm(0.5)
+                            resp_para.paragraph_format.first_line_indent = Cm(-0.5)
+                            
                 bullet_run = resp_para.add_run("•\t")
-                bullet_run.font.name = self.font_name
-                bullet_run.font.size = Pt(self.font_sizes['body_text'])
+                            bullet_run.font.name = self.font_name
+                            bullet_run.font.size = Pt(self.font_sizes['body_text'])
                 bullet_run.font.color.rgb = self.teal
-                
-                text_run = resp_para.add_run(detailed_resp)
-                text_run.font.name = self.font_name
-                text_run.font.size = Pt(self.font_sizes['body_text'])
+                            
+                            text_run = resp_para.add_run(detailed_resp)
+                            text_run.font.name = self.font_name
+                            text_run.font.size = Pt(self.font_sizes['body_text'])
                 text_run.font.color.rgb = self.black
-        else:
+                    else:
             self._render_default_responsibilities(right_cell, position, company, single=True)
     
     def _render_default_responsibilities(self, right_cell, position: str, company: str, single: bool = False) -> None:
         """Render default responsibilities when none are provided."""
-        from docx.enum.text import WD_TAB_ALIGNMENT
-        from docx.shared import Cm
+                        from docx.enum.text import WD_TAB_ALIGNMENT
+        from docx.shared import Cm, Pt
         
         position_text = position.lower() if position else "werkzaamheden"
         defaults = [
@@ -587,19 +591,19 @@ class TemplateResumeGeneratorV2:
         for default_text in defaults:
             default_text = self._ensure_period_at_end(default_text)
             resp_para = right_cell.add_paragraph()
-            tab_stops = resp_para.paragraph_format.tab_stops
-            tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.LEFT)
-            resp_para.paragraph_format.left_indent = Cm(0.5)
-            resp_para.paragraph_format.first_line_indent = Cm(-0.5)
-            
-            bullet_run = resp_para.add_run("•\t")
-            bullet_run.font.name = self.font_name
-            bullet_run.font.size = Pt(self.font_sizes['body_text'])
+                        tab_stops = resp_para.paragraph_format.tab_stops
+                        tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.LEFT)
+                        resp_para.paragraph_format.left_indent = Cm(0.5)
+                        resp_para.paragraph_format.first_line_indent = Cm(-0.5)
+                        
+                        bullet_run = resp_para.add_run("•\t")
+                        bullet_run.font.name = self.font_name
+                        bullet_run.font.size = Pt(self.font_sizes['body_text'])
             bullet_run.font.color.rgb = self.teal
-            
-            text_run = resp_para.add_run(default_text)
-            text_run.font.name = self.font_name
-            text_run.font.size = Pt(self.font_sizes['body_text'])
+                        
+                        text_run = resp_para.add_run(default_text)
+                        text_run.font.name = self.font_name
+                        text_run.font.size = Pt(self.font_sizes['body_text'])
             text_run.font.color.rgb = self.black
             text_run.font.bold = False
     
@@ -630,6 +634,9 @@ class TemplateResumeGeneratorV2:
         
         # Add empty paragraph
         doc.add_paragraph()
+        
+        # Add standard "Zelfstandig Ondernemer" entry as first work experience
+        self._render_zelfstandig_ondernemer_entry(doc)
         
         # Add grouped work experience entries
         if work_experience and isinstance(work_experience, list):
@@ -695,18 +702,18 @@ class TemplateResumeGeneratorV2:
             project_row.cells[0].width = Inches(1.2)
             project_row.cells[1].width = Inches(5.8)
 
-            # Left column: Project period (italic, standard color)
+            # Left column: Project period (italic, standard color, 9pt font size for bundled entries)
             project_left_cell = project_row.cells[0]
             project_left_cell.text = ""
             if project_period_text:
                 project_left_para = project_left_cell.paragraphs[0]
                 project_left_run = project_left_para.add_run(project_period_text)
                 project_left_run.font.name = self.font_name
-                project_left_run.font.size = Pt(self.font_sizes['body_text'])
+                project_left_run.font.size = Pt(9)  # 9pt font size for bundled project years (1 size smaller)
                 project_left_run.font.color.rgb = self.black  # Standard color
                 project_left_run.font.italic = True  # Italic (schuingedrukt)
                 project_left_run.font.bold = False
-            self._style_table_cell(project_left_cell, self.font_sizes['body_text'])
+            self._style_table_cell(project_left_cell, 9)  # Use 9pt for cell styling too
 
             # Right column: Project name, position, responsibilities
             project_right_cell = project_row.cells[1]
@@ -744,7 +751,7 @@ class TemplateResumeGeneratorV2:
         project_name = (item.get('name') or "").strip()
         client = item.get('client')
         position_text = item.get('position', '')
-
+            
         # Build display name: project name + company (or just company if no project)
         if project_name:
             if client and client not in project_name:
@@ -786,6 +793,49 @@ class TemplateResumeGeneratorV2:
 
         responsibilities = item.get('responsibilities', [])
         self._render_responsibilities(right_cell, responsibilities, position_text, company_display)
+
+        doc.add_paragraph()
+    
+    def _render_zelfstandig_ondernemer_entry(self, doc: Document) -> None:
+        """Render standard 'Zelfstandig Ondernemer' entry as first work experience."""
+        work_table = doc.add_table(rows=1, cols=2)
+        work_table.style = None
+        work_table.allow_autofit = False
+        work_table.cell(0, 0).width = Inches(1.2)
+        work_table.cell(0, 1).width = Inches(5.8)
+
+        # Left column: Empty (no period)
+        left_cell = work_table.cell(0, 0)
+        left_cell.text = ""
+        self._style_table_cell(left_cell, self.font_sizes['body_text'])
+
+        # Right column: Company name, position, and "Enkele projecten:"
+        right_cell = work_table.cell(0, 1)
+        right_cell.text = ""
+
+        # Company name: "Bedrijfsnaam" (orange, bold)
+        company_para = right_cell.paragraphs[0]
+        company_run = company_para.add_run("Bedrijfsnaam")
+        company_run.font.name = self.font_name
+        company_run.font.size = Pt(self.font_sizes['body_text'])
+        company_run.font.color.rgb = self.synergie_orange
+        company_run.font.bold = True
+
+        # Position: "Zelfstandig Ondernemer" (teal/blue, bold)
+        position_para = right_cell.add_paragraph()
+        position_run = position_para.add_run("Zelfstandig Ondernemer")
+        position_run.font.name = self.font_name
+        position_run.font.size = Pt(self.font_sizes['body_text'])
+        position_run.font.color.rgb = self.teal
+        position_run.font.bold = True
+
+        # "Enkele projecten:" (standard black, not bold)
+        projects_para = right_cell.add_paragraph()
+        projects_run = projects_para.add_run("Enkele projecten:")
+        projects_run.font.name = self.font_name
+        projects_run.font.size = Pt(self.font_sizes['body_text'])
+        projects_run.font.color.rgb = self.black
+        projects_run.font.bold = False
 
         doc.add_paragraph()
     
