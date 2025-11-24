@@ -433,7 +433,7 @@ class TemplateResumeGeneratorV2:
                         period_start = base_start_date
                         period_end = base_end_date
                     project_is_current = 'heden' in str(project_period).lower() or 'present' in str(project_period).lower()
-            else:
+                else:
                     period_start = base_start_date
                     period_end = base_end_date
                     project_is_current = base_is_current
@@ -553,29 +553,29 @@ class TemplateResumeGeneratorV2:
         cleaned_responsibilities = [resp for resp in responsibilities if resp]
         if cleaned_responsibilities:
             for resp in cleaned_responsibilities:
-                            detailed_resp = self._expand_responsibility(resp, position, company)
-                            detailed_resp = self._ensure_period_at_end(detailed_resp)
-                            resp_para = right_cell.add_paragraph()
-                            tab_stops = resp_para.paragraph_format.tab_stops
-                            tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.LEFT)
-                            resp_para.paragraph_format.left_indent = Cm(0.5)
-                            resp_para.paragraph_format.first_line_indent = Cm(-0.5)
-                            
+                detailed_resp = self._expand_responsibility(resp, position, company)
+                detailed_resp = self._ensure_period_at_end(detailed_resp)
+                resp_para = right_cell.add_paragraph()
+                tab_stops = resp_para.paragraph_format.tab_stops
+                tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.LEFT)
+                resp_para.paragraph_format.left_indent = Cm(0.5)
+                resp_para.paragraph_format.first_line_indent = Cm(-0.5)
+                
                 bullet_run = resp_para.add_run("•\t")
-                            bullet_run.font.name = self.font_name
-                            bullet_run.font.size = Pt(self.font_sizes['body_text'])
+                bullet_run.font.name = self.font_name
+                bullet_run.font.size = Pt(self.font_sizes['body_text'])
                 bullet_run.font.color.rgb = self.teal
-                            
-                            text_run = resp_para.add_run(detailed_resp)
-                            text_run.font.name = self.font_name
-                            text_run.font.size = Pt(self.font_sizes['body_text'])
+                
+                text_run = resp_para.add_run(detailed_resp)
+                text_run.font.name = self.font_name
+                text_run.font.size = Pt(self.font_sizes['body_text'])
                 text_run.font.color.rgb = self.black
-                    else:
+        else:
             self._render_default_responsibilities(right_cell, position, company, single=True)
     
     def _render_default_responsibilities(self, right_cell, position: str, company: str, single: bool = False) -> None:
         """Render default responsibilities when none are provided."""
-                        from docx.enum.text import WD_TAB_ALIGNMENT
+        from docx.enum.text import WD_TAB_ALIGNMENT
         from docx.shared import Cm, Pt
         
         position_text = position.lower() if position else "werkzaamheden"
@@ -591,19 +591,19 @@ class TemplateResumeGeneratorV2:
         for default_text in defaults:
             default_text = self._ensure_period_at_end(default_text)
             resp_para = right_cell.add_paragraph()
-                        tab_stops = resp_para.paragraph_format.tab_stops
-                        tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.LEFT)
-                        resp_para.paragraph_format.left_indent = Cm(0.5)
-                        resp_para.paragraph_format.first_line_indent = Cm(-0.5)
-                        
-                        bullet_run = resp_para.add_run("•\t")
-                        bullet_run.font.name = self.font_name
-                        bullet_run.font.size = Pt(self.font_sizes['body_text'])
+            tab_stops = resp_para.paragraph_format.tab_stops
+            tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.LEFT)
+            resp_para.paragraph_format.left_indent = Cm(0.5)
+            resp_para.paragraph_format.first_line_indent = Cm(-0.5)
+            
+            bullet_run = resp_para.add_run("•\t")
+            bullet_run.font.name = self.font_name
+            bullet_run.font.size = Pt(self.font_sizes['body_text'])
             bullet_run.font.color.rgb = self.teal
-                        
-                        text_run = resp_para.add_run(default_text)
-                        text_run.font.name = self.font_name
-                        text_run.font.size = Pt(self.font_sizes['body_text'])
+            
+            text_run = resp_para.add_run(default_text)
+            text_run.font.name = self.font_name
+            text_run.font.size = Pt(self.font_sizes['body_text'])
             text_run.font.color.rgb = self.black
             text_run.font.bold = False
     
