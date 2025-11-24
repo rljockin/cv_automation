@@ -142,6 +142,34 @@
                     body: formData
                 });
                 
+                // Check if response is OK and has JSON content
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    let errorMessage = `Server error (${response.status}): ${response.statusText}`;
+                    try {
+                        // Try to parse as JSON if possible
+                        const errorJson = JSON.parse(errorText);
+                        if (errorJson.error) {
+                            errorMessage = errorJson.error;
+                        }
+                    } catch (e) {
+                        // If not JSON, use the text or a generic message
+                        if (errorText && errorText.length < 500) {
+                            errorMessage = errorText;
+                        }
+                    }
+                    showResult(`<strong>Error:</strong> ${errorMessage}`, 'error');
+                    return;
+                }
+                
+                // Check content type
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    showResult(`<strong>Error:</strong> Unexpected response format. Server returned: ${text.substring(0, 200)}`, 'error');
+                    return;
+                }
+                
                 const data = await response.json();
                 
                 if (data.success) {
@@ -153,10 +181,10 @@
                         </a>
                     `, 'success');
                 } else {
-                    showResult(`<strong>Error:</strong> ${data.error}`, 'error');
+                    showResult(`<strong>Error:</strong> ${data.error || 'Unknown error occurred'}`, 'error');
                 }
             } catch (error) {
-                showResult(`<strong>Error:</strong> ${error.message}`, 'error');
+                showResult(`<strong>Error:</strong> ${error.message || 'Failed to process request. Please check your connection and try again.'}`, 'error');
             } finally {
                 loading.style.display = 'none';
                 submitBtn.disabled = false;

@@ -129,10 +129,15 @@ def process_cv(cv_path, original_filename):
         
         # Step 2: Parse with OpenAI
         print("Step 2: Parsing with OpenAI...")
-        cv_data = openai_parser.parse_cv_text(extraction_result.text)
+        try:
+            cv_data = openai_parser.parse_cv_text(extraction_result.text)
+        except Exception as e:
+            error_msg = f"OpenAI parsing error: {str(e)}"
+            print(error_msg)
+            return {'success': False, 'error': error_msg}
         
         if not cv_data:
-            return {'success': False, 'error': 'AI parsing failed'}
+            return {'success': False, 'error': 'AI parsing failed. Please check your OpenAI API key and try again.'}
         
         print(f"CV data parsed successfully. Confidence: {cv_data.get('confidence_score', 0.0)}")
         

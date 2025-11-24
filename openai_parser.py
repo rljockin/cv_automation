@@ -625,20 +625,54 @@ IMPORTANT FOR PROFILE_SUMMARY:
             import httpx
             client = openai.OpenAI(
                 api_key=self.api_key,
-                http_client=httpx.Client()
-            )
-            response = client.chat.completions.create(
-                model="gpt-4o",  # Using full gpt-4o instead of mini for higher token limits
-                messages=[
-                    {"role": "system", "content": self.system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                temperature=0.1,
-                max_tokens=16384  # gpt-4o supports up to 16k output tokens (128k total context)
+                http_client=httpx.Client(timeout=120.0)  # 2 minute timeout
             )
             
+            try:
+                response = client.chat.completions.create(
+                    model="gpt-4o",  # Using full gpt-4o instead of mini for higher token limits
+                    messages=[
+                        {"role": "system", "content": self.system_prompt},
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    temperature=0.1,
+                    max_tokens=16384  # gpt-4o supports up to 16k output tokens (128k total context)
+                )
+            except openai.RateLimitError as e:
+                error_msg = f"OpenAI API rate limit exceeded. Please try again in a moment. Error: {str(e)}"
+                self.logger.error(error_msg)
+                print(error_msg)
+                return None
+            except openai.AuthenticationError as e:
+                error_msg = f"OpenAI API authentication failed. Please check your API key. Error: {str(e)}"
+                self.logger.error(error_msg)
+                print(error_msg)
+                return None
+            except openai.APIError as e:
+                error_msg = f"OpenAI API error: {str(e)}"
+                self.logger.error(error_msg)
+                print(error_msg)
+                return None
+            except Exception as e:
+                error_msg = f"Unexpected error calling OpenAI API: {str(e)}"
+                self.logger.error(error_msg)
+                print(error_msg)
+                return None
+            
             # Extract response
+            if not response or not response.choices or len(response.choices) == 0:
+                error_msg = "OpenAI API returned empty response"
+                self.logger.error(error_msg)
+                print(error_msg)
+                return None
+                
             response_text = response.choices[0].message.content
+            if not response_text:
+                error_msg = "OpenAI API returned empty content"
+                self.logger.error(error_msg)
+                print(error_msg)
+                return None
+                
             print(f"OpenAI response received: {len(response_text)} characters")
             
             # Parse JSON response (handle markdown code blocks and explanations)
