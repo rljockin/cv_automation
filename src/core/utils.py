@@ -70,15 +70,15 @@ def ensure_directory_exists(directory_path: str) -> None:
 # ============================================================================
 
 def clean_text(text: str) -> str:
-    """Clean and normalize text"""
+    """Clean and normalize text while preserving line structure"""
     if not text:
         return ""
     
     # Normalize unicode characters
     text = unicodedata.normalize('NFKC', text)
     
-    # Remove multiple spaces
-    text = re.sub(r'\s+', ' ', text)
+    # Remove multiple spaces within lines (but preserve newlines)
+    text = re.sub(r'[ \t]+', ' ', text)
     
     # Remove multiple newlines (keep max 2)
     text = re.sub(r'\n{3,}', '\n\n', text)

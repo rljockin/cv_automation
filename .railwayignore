@@ -1,0 +1,75 @@
+# Railway ignore file - exclude unnecessary files from deployment
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Test files
+test_*.py
+*_test.py
+tests/
+test_output/
+test_data/
+*.test
+
+# Documentation (keep README.md)
+*.md
+!README.md
+
+# Old files
+old/
+Random/
+Difficult CV's/
+comparison_analysis/
+demo_output/
+
+# Logs and temporary files
+logs/
+*.log
+*.tmp
+*.temp
+
+# Database (will be created fresh)
+database/*.db
+database/*.sqlite
+
+# Output files (will be generated)
+output/
+uploads/
+
+# Docker files (not needed in Railway)
+docker/
+docker-compose*.yml
+deploy.sh
+deploy.ps1
+setup-ssl.sh
+
+# Analysis and diagnostic files
+*_analysis.txt
+diagnostic_*.txt
+*.txt
+!requirements.txt
+
+# Config backups
+*.bak
+*.backup
+

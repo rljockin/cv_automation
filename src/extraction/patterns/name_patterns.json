@@ -1,0 +1,116 @@
+{
+  "detection_strategies": [
+    {
+      "name": "after_personalia_header",
+      "description": "Look for name after Personalia/Personal Info header",
+      "priority": 1,
+      "confidence": 0.95
+    },
+    {
+      "name": "first_line",
+      "description": "First non-empty line that looks like a name",
+      "priority": 2,
+      "confidence": 0.9
+    },
+    {
+      "name": "first_paragraph",
+      "description": "First line of first paragraph",
+      "priority": 3,
+      "confidence": 0.85
+    },
+    {
+      "name": "first_table_cell",
+      "description": "First cell of first table",
+      "priority": 4,
+      "confidence": 0.7
+    },
+    {
+      "name": "from_filename",
+      "description": "Extract from filename (e.g., 'CV John Doe.pdf')",
+      "priority": 5,
+      "confidence": 0.6
+    },
+    {
+      "name": "fallback_anonymous",
+      "description": "Use 'Anonymous_TIMESTAMP' as last resort",
+      "priority": 6,
+      "confidence": 0.1
+    }
+  ],
+  "invalid_names": [
+    "Naam",
+    "Name",
+    "Voornaam",
+    "Achternaam",
+    "First name",
+    "Last name",
+    "Persoonlijke gegevens",
+    "Personal info",
+    "Personal information",
+    "Personalia",
+    "Gegevens",
+    "Contact",
+    "Contactgegevens",
+    "Geboorteplaats",
+    "Geboortedatum",
+    "Birth date",
+    "Birthday",
+    "Woonplaats",
+    "Location",
+    "Adres",
+    "Address",
+    "Telefoonnummer",
+    "Phone",
+    "Email",
+    "E-mail",
+    "Profiel",
+    "Profile",
+    "Samenvatting",
+    "Summary",
+    "Curriculum Vitae",
+    "CV",
+    "Resume",
+    "Resumé"
+  ],
+  "name_indicators": [
+    "as-built gegevens",
+    "persoonlijk profiel:",
+    "■ personalia",
+    "opleidingsgegevens",
+    "persoonlijke effectieve",
+    "bedrijfsgegevens omgeving+",
+    "pts (persoonlijke",
+    "persoonlijke gegevens",
+    "04-2013 persoonlijk",
+    "persoonlijke motivatie",
+    "jonathanippel@gmail.com persoonsgegevens",
+    "persoons gegevens",
+    "persoonlijk leertraject",
+    "jan. 2015",
+    "persoonlijk leiderschap",
+    "bedrijfsgegevens voor",
+    "2009 persoonlijke",
+    "gegevens invoeren",
+    "naw-gegevens klanten",
+    "relevante projectgegevens"
+  ],
+  "position_preferences": {
+    "first_line_priority": 0.9,
+    "first_paragraph_priority": 0.8,
+    "after_personalia_priority": 0.95,
+    "in_table_cell_priority": 0.7,
+    "from_filename_priority": 0.6,
+    "max_name_length": 50,
+    "min_name_length": 3,
+    "max_words": 4,
+    "min_words": 1
+  },
+  "name_format_patterns": [
+    "^[A-Z][a-z]+ [A-Z][a-z]+$",
+    "^[A-Z][a-z]+ [A-Z]\\. [A-Z][a-z]+$",
+    "^[A-Z][a-z]+, [A-Z][a-z]+$",
+    "^Ir\\. [A-Z][a-z]+ [A-Z][a-z]+$",
+    "^Ing\\. [A-Z][a-z]+ [A-Z][a-z]+$",
+    "^Drs\\. [A-Z][a-z]+ [A-Z][a-z]+$"
+  ]
+}

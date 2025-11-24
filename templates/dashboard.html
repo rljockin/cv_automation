@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CV Automation</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #D07E1F 0%, #ff9933 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card .label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #D07E1F;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card .subtitle {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .chart-card h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        .activity-table {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .activity-table h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        table thead {
+            background-color: #f8f9fa;
+        }
+        
+        table th {
+            padding: 12px;
+            text-align: left;
+            color: #666;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+        
+        table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-failed {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-processing {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .confidence-bar {
+            background-color: #e9ecef;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b 0%, #ffd93d 50%, #6bcf7f 100%);
+            transition: width 0.3s;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        
+        .refresh-button {
+            background-color: #D07E1F;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .refresh-button:hover {
+            background-color: #b86a1a;
+        }
+        
+        .nav-links {
+            margin-top: 10px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+            opacity: 0.9;
+        }
+        
+        .nav-links a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>CV Automation Dashboard</h1>
+            <p>Real-time monitoring and analytics</p>
+            <div class="nav-links">
+                <a href="/">← Back to Upload</a>
+                <a href="/status">System Status</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <button class="refresh-button" onclick="loadDashboard()">↻ Refresh Data</button>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">Total CVs Processed</div>
+                <div class="value" id="stat-total">-</div>
+                <div class="subtitle">Last 30 days</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Success Rate</div>
+                <div class="value" id="stat-success-rate">-</div>
+                <div class="subtitle">Successful completions</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Average Confidence</div>
+                <div class="value" id="stat-confidence">-</div>
+                <div class="subtitle">Quality score</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Failed CVs</div>
+                <div class="value" id="stat-failed">-</div>
+                <div class="subtitle">Requiring attention</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>Processing Success/Failure</h3>
+                <canvas id="successChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Confidence Score Distribution</h3>
+                <canvas id="confidenceChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Recent Activity Table -->
+        <div class="activity-table">
+            <h3>Recent Activity (Last 50 CVs)</h3>
+            <div id="activity-loading" class="loading">Loading...</div>
+            <table id="activity-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>File Name</th>
+                        <th>Status</th>
+                        <th>Confidence</th>
+                        <th>Processed Date</th>
+                    </tr>
+                </thead>
+                <tbody id="activity-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let successChart = null;
+        let confidenceChart = null;
+
+        // Load dashboard data
+        async function loadDashboard() {
+            try {
+                // Load statistics
+                const statsResponse = await fetch('/dashboard/stats');
+                const statsData = await statsResponse.json();
+                
+                if (statsData.success) {
+                    updateStatistics(statsData);
+                    updateCharts(statsData);
+                }
+
+                // Load recent activity
+                const activityResponse = await fetch('/dashboard/recent?limit=50');
+                const activityData = await activityResponse.json();
+                
+                if (activityData.success) {
+                    updateActivityTable(activityData.activity);
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Update statistics cards
+        function updateStatistics(data) {
+            const stats = data.stats;
+            
+            document.getElementById('stat-total').textContent = stats.total_processed || 0;
+            document.getElementById('stat-success-rate').textContent = 
+                (stats.success_rate || 0).toFixed(1) + '%';
+            document.getElementById('stat-confidence').textContent = 
+                (data.confidence_distribution.average || 0).toFixed(2);
+            document.getElementById('stat-failed').textContent = stats.failed || 0;
+        }
+
+        // Update charts
+        function updateCharts(data) {
+            const stats = data.stats;
+            const dist = data.confidence_distribution.bins || {};
+
+            // Success/Failure Pie Chart
+            if (successChart) {
+                successChart.destroy();
+            }
+
+            const successCtx = document.getElementById('successChart').getContext('2d');
+            successChart = new Chart(successCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Successful', 'Failed'],
+                    datasets: [{
+                        data: [stats.successful || 0, stats.failed || 0],
+                        backgroundColor: ['#6bcf7f', '#ff6b6b']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Confidence Distribution Bar Chart
+            if (confidenceChart) {
+                confidenceChart.destroy();
+            }
+
+            const confidenceCtx = document.getElementById('confidenceChart').getContext('2d');
+            confidenceChart = new Chart(confidenceCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Excellent', 'Good', 'Acceptable', 'Poor', 'Failed'],
+                    datasets: [{
+                        label: 'Number of CVs',
+                        data: [
+                            dist.excellent || 0,
+                            dist.good || 0,
+                            dist.acceptable || 0,
+                            dist.poor || 0,
+                            dist.failed || 0
+                        ],
+                        backgroundColor: [
+                            '#6bcf7f',
+                            '#51cf66',
+                            '#ffd93d',
+                            '#ff922b',
+                            '#ff6b6b'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update activity table
+        function updateActivityTable(activity) {
+            const tbody = document.getElementById('activity-body');
+            tbody.innerHTML = '';
+
+            if (!activity || activity.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999;">No recent activity</td></tr>';
+            } else {
+                activity.forEach(item => {
+                    const row = document.createElement('tr');
+                    
+                    // File name
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = item.file_name || 'Unknown';
+                    row.appendChild(nameCell);
+                    
+                    // Status
+                    const statusCell = document.createElement('td');
+                    const statusBadge = document.createElement('span');
+                    statusBadge.className = 'status-badge status-' + item.status;
+                    statusBadge.textContent = item.status || 'unknown';
+                    statusCell.appendChild(statusBadge);
+                    row.appendChild(statusCell);
+                    
+                    // Confidence
+                    const confCell = document.createElement('td');
+                    if (item.confidence !== null && item.confidence !== undefined) {
+                        const confBar = document.createElement('div');
+                        confBar.className = 'confidence-bar';
+                        const confFill = document.createElement('div');
+                        confFill.className = 'confidence-fill';
+                        confFill.style.width = (item.confidence * 100) + '%';
+                        confBar.appendChild(confFill);
+                        confCell.appendChild(confBar);
+                        
+                        const confText = document.createElement('div');
+                        confText.textContent = (item.confidence * 100).toFixed(0) + '%';
+                        confText.style.fontSize = '12px';
+                        confText.style.marginTop = '5px';
+                        confCell.appendChild(confText);
+                    } else {
+                        confCell.textContent = 'N/A';
+                    }
+                    row.appendChild(confCell);
+                    
+                    // Date
+                    const dateCell = document.createElement('td');
+                    if (item.processed_date) {
+                        const date = new Date(item.processed_date);
+                        dateCell.textContent = date.toLocaleString();
+                    } else {
+                        dateCell.textContent = 'Pending';
+                    }
+                    row.appendChild(dateCell);
+                    
+                    tbody.appendChild(row);
+                });
+            }
+
+            document.getElementById('activity-loading').style.display = 'none';
+            document.getElementById('activity-table').style.display = 'table';
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadDashboard, 30000);
+
+        // Initial load
+        loadDashboard();
+    </script>
+</body>
+</html>
+

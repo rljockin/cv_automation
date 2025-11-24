@@ -1,0 +1,121 @@
+{
+  "formats": [
+    {
+      "name": "YYYY",
+      "pattern": "\\b(19\\d{2}|20[0-2]\\d)\\b",
+      "example": "2025",
+      "frequency": 884,
+      "priority": 1
+    },
+    {
+      "name": "YYYY - YYYY",
+      "pattern": "\\b(19\\d{2}|20[0-2]\\d)\\s*[-–—]\\s*(19\\d{2}|20[0-2]\\d)\\b",
+      "example": "2020 - 2023",
+      "frequency": 787,
+      "priority": 2
+    },
+    {
+      "name": "YYYY - heden",
+      "pattern": "\\b(19\\d{2}|20[0-2]\\d)\\s*[-–—]\\s*(heden|present|nu|huidig|current)\\b",
+      "example": "2023 - heden",
+      "frequency": 708,
+      "priority": 3
+    },
+    {
+      "name": "Month YYYY",
+      "pattern": "\\b(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december|jan|feb|mrt|apr|mei|jun|jul|aug|sep|okt|nov|dec|january|february|march|april|may|june|july|august|september|october|november|december)\\s+(19\\d{2}|20[0-2]\\d)\\b",
+      "example": "januari 2025",
+      "frequency": 506,
+      "priority": 4
+    },
+    {
+      "name": "DD-MM-YYYY",
+      "pattern": "\\b\\d{1,2}[-/]\\d{1,2}[-/](19\\d{2}|20[0-2]\\d)\\b",
+      "example": "01-10-2025",
+      "frequency": 196,
+      "priority": 5
+    },
+    {
+      "name": "MM/YYYY",
+      "pattern": "\\b\\d{1,2}/(19\\d{2}|20[0-2]\\d)\\b",
+      "example": "10/2025",
+      "frequency": 111,
+      "priority": 6
+    },
+    {
+      "name": "YYYY-MM-DD",
+      "pattern": "\\b(19\\d{2}|20[0-2]\\d)[-/]\\d{1,2}[-/]\\d{1,2}\\b",
+      "example": "2025-10-01",
+      "frequency": 2,
+      "priority": 7
+    }
+  ],
+  "keywords": {
+    "current_dutch": [
+      "heden",
+      "huidig",
+      "nu"
+    ],
+    "current_english": [
+      "present",
+      "current",
+      "now"
+    ],
+    "months_dutch": [
+      "januari",
+      "februari",
+      "maart",
+      "april",
+      "mei",
+      "juni",
+      "juli",
+      "augustus",
+      "september",
+      "oktober",
+      "november",
+      "december"
+    ],
+    "months_dutch_abbr": [
+      "jan",
+      "feb",
+      "mrt",
+      "apr",
+      "mei",
+      "jun",
+      "jul",
+      "aug",
+      "sep",
+      "okt",
+      "nov",
+      "dec"
+    ],
+    "months_english": [
+      "january",
+      "february",
+      "march",
+      "april",
+      "may",
+      "june",
+      "july",
+      "august",
+      "september",
+      "october",
+      "november",
+      "december"
+    ],
+    "months_english_abbr": [
+      "jan",
+      "feb",
+      "mar",
+      "apr",
+      "may",
+      "jun",
+      "jul",
+      "aug",
+      "sep",
+      "oct",
+      "nov",
+      "dec"
+    ]
+  }
+}

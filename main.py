@@ -39,8 +39,8 @@ from src.core import (
     CVAutomationException, ValidationException, GenerationException
 )
 from src.extraction import ExtractorFactory, ExtractionResult
-from src.extraction.parsers import CVParser
-from src.generation import ResumeGenerator
+from openai_parser import OpenAICVParser
+from template_resume_generator_v2 import TemplateResumeGeneratorV2
 
 
 class CVAutomationOrchestrator:
@@ -65,8 +65,15 @@ class CVAutomationOrchestrator:
         
         # Initialize components
         self.extractor_factory = ExtractorFactory()
-        self.parser = CVParser()
-        self.generator = ResumeGenerator()
+        self.parser = OpenAICVParser()  # AI-powered parser for better extraction
+        
+        # Initialize template generator with template path
+        template_path = '2.docx'
+        if not os.path.exists(template_path):
+            self.logger.warning(f"Template file not found: {template_path}, using default generation")
+            self.generator = None
+        else:
+            self.generator = TemplateResumeGeneratorV2(template_path)
         
         # Statistics tracking
         self.stats = {
@@ -220,11 +227,22 @@ class CVAutomationOrchestrator:
             result['steps_completed'].append('parsing')
             self.stats['successful_parsings'] += 1
             
+            # Step 2.5: Split grouped projects (transformation)
+            self.logger.info(f"Step 2.5: Splitting grouped projects for {cv_file.file_name}")
+            cv_data_object = parsing_result['cv_data']
+            
+            # Apply project splitter to ensure one project per work_experience entry
+            from src.transformation.project_splitter import ProjectSplitter
+            splitter = ProjectSplitter()
+            original_count = len(cv_data_object.get('work_experience', []))
+            cv_data_object['work_experience'] = splitter.split_grouped_projects(
+                cv_data_object.get('work_experience', [])
+            )
+            new_count = len(cv_data_object.get('work_experience', []))
+            self.logger.info(f"Project splitting: {original_count} entries → {new_count} entries")
+            
             # Step 3: Generation
             self.logger.info(f"Step 3: Generating Synergie Resumé for {cv_file.file_name}")
-            
-            # Extract the actual CV data from the parsing result
-            cv_data_object = parsing_result['cv_data']
             generation_result = self._generate_resume(cv_data_object, output_dir)
             
             if not generation_result['success']:
@@ -344,35 +362,28 @@ class CVAutomationOrchestrator:
             )
     
     def _parse_cv_data(self, text: str, cv_file: CVFile) -> Dict[str, Any]:
-        """Parse CV text into structured data."""
+        """Parse CV text into structured data using OpenAI."""
         try:
-            # Create extraction result
-            extraction_result = ExtractionResult(
-                success=True,
-                text=text,
-                method=None,
-                char_count=len(text)
-            )
+            # Parse using OpenAICVParser (AI-powered)
+            cv_data = self.parser.parse_cv_text(text)
             
-            # Parse using CVParser with filename
-            result = self.parser.parse_cv(extraction_result, cv_file.file_name)
-            
-            if result['success']:
+            if cv_data:
                 return {
                     'success': True,
-                    'cv_data': result,
+                    'cv_data': cv_data,
                     'error_message': None,
-                    'confidence': result.get('confidence', 0.0)
+                    'confidence': cv_data.get('confidence_score', 0.0)
                 }
             else:
                 return {
                     'success': False,
                     'cv_data': None,
-                    'error_message': result.get('error', 'Parsing failed'),
+                    'error_message': 'OpenAI parsing returned no data',
                     'confidence': 0.0
                 }
                 
         except Exception as e:
+            self.logger.error(f"Parsing failed for {cv_file.file_name}: {str(e)}")
             return {
                 'success': False,
                 'cv_data': None,
@@ -381,95 +392,40 @@ class CVAutomationOrchestrator:
             }
     
     def _generate_resume(self, cv_data_object, output_dir: str) -> Dict[str, Any]:
-        """Generate Synergie Resumé from CV data."""
+        """Generate Synergie Resumé using TemplateResumeGeneratorV2."""
         try:
-            # Debug: Check the type of cv_data_object
-            self.logger.debug(f"cv_data_object type: {type(cv_data_object)}")
-            self.logger.debug(f"cv_data_object: {cv_data_object}")
+            # cv_data_object is already a dict from OpenAICVParser
+            personal_info = cv_data_object.get('personal_info', {})
             
-            # Handle both CVData object and dictionary
-            if hasattr(cv_data_object, 'personal_info'):
-                # It's a CVData object
-                personal_info = cv_data_object.personal_info
-                work_experience = cv_data_object.work_experience
-                education = cv_data_object.education
-                skills = cv_data_object.skills
-                profile = cv_data_object.profile
-            elif 'cv_data' in cv_data_object:
-                # It's a parsing result dictionary with nested CVData
-                cv_data = cv_data_object['cv_data']
-                personal_info = cv_data.personal_info
-                work_experience = cv_data.work_experience
-                education = cv_data.education
-                skills = cv_data.skills
-                profile = cv_data.profile
-            else:
-                # It's a dictionary (fallback)
-                personal_info = cv_data_object.get('personal_info', {})
-                work_experience = cv_data_object.get('work_experience', [])
-                education = cv_data_object.get('education', [])
-                skills = cv_data_object.get('skills', [])
-                profile = cv_data_object.get('profile')
-            
-            # Generate output filename
-            person_name = personal_info.full_name if hasattr(personal_info, 'full_name') else personal_info.get('full_name', 'Unknown')
-            safe_name = person_name.replace(" ", "_").replace("/", "_")
-            output_filename = f"Resumé_Synergie_{safe_name}.docx"
+            # Generate filename using the new format
+            output_filename = self.generator.format_resume_filename(personal_info)
             output_path = os.path.join(output_dir, output_filename)
             
-            # Convert CVData object to dictionary for the generator
-            cv_data_dict = {
-                'personal_info': {
-                    'full_name': personal_info.full_name if hasattr(personal_info, 'full_name') else personal_info.get('full_name'),
-                    'first_name': personal_info.first_name if hasattr(personal_info, 'first_name') else personal_info.get('first_name'),
-                    'last_name': personal_info.last_name if hasattr(personal_info, 'last_name') else personal_info.get('last_name'),
-                    'location': personal_info.location if hasattr(personal_info, 'location') else personal_info.get('location'),
-                    'phone': personal_info.phone if hasattr(personal_info, 'phone') else personal_info.get('phone'),
-                    'email': personal_info.email if hasattr(personal_info, 'email') else personal_info.get('email')
-                },
-                'work_experience': [
-                    {
-                        'company': exp.company if hasattr(exp, 'company') else exp.get('company'),
-                        'position': exp.position if hasattr(exp, 'position') else exp.get('position'),
-                        'description': (exp.description or '') if hasattr(exp, 'description') else exp.get('description', ''),
-                        'start_date': exp.start_date if hasattr(exp, 'start_date') else exp.get('start_date'),
-                        'end_date': exp.end_date if hasattr(exp, 'end_date') else exp.get('end_date'),
-                        'is_current': exp.is_current if hasattr(exp, 'is_current') else exp.get('is_current', False)
-                    }
-                    for exp in work_experience
-                ],
-                'education': [
-                    {
-                        'degree': edu.degree if hasattr(edu, 'degree') else edu.get('degree'),
-                        'institution': edu.institution if hasattr(edu, 'institution') else edu.get('institution'),
-                        'graduation_year': edu.graduation_year if hasattr(edu, 'graduation_year') else edu.get('graduation_year')
-                    }
-                    for edu in education
-                ],
-                'skills': skills,
-                'profile': profile
-            }
+            person_name = personal_info.get('full_name', 'Unknown')
+            self.logger.info(f"Generating Resumé for {person_name} using TemplateResumeGeneratorV2")
             
-            # Generate resume
-            generator = ResumeGenerator()
-            result = generator.generate_resume(cv_data_dict, output_path, convert_to_pdf=False)
+            # Use template generator (cv_data_object is already in correct format)
+            result = self.generator.generate_resume(cv_data_object, output_path)
             
             if result['success']:
+                self.logger.info(f"Successfully generated Resumé: {output_filename}")
                 return {
                     'success': True,
-                    'output_file': result['docx_path'],
+                    'output_file': result['output_path'],
                     'error_message': None,
                     'processing_time': 0.0
                 }
             else:
+                self.logger.error(f"Generation failed: {result.get('error', 'Unknown error')}")
                 return {
                     'success': False,
                     'output_file': None,
-                    'error_message': result['error'],
+                    'error_message': result.get('error', 'Generation failed'),
                     'processing_time': 0.0
                 }
                 
         except Exception as e:
+            self.logger.error(f"Generation failed for {cv_data_object.get('personal_info', {}).get('full_name', 'Unknown')}: {str(e)}", exc_info=True)
             return {
                 'success': False,
                 'output_file': None,

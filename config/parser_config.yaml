@@ -1,0 +1,139 @@
+# CV Automation - Parser Configuration
+# Controls which parsing strategy to use and how to handle edge cases
+
+parser:
+  # Strategy options: pattern | openai | hybrid | comprehensive
+  primary_strategy: comprehensive
+  fallback_enabled: true
+  confidence_threshold: 0.7
+
+strategies:
+  pattern:
+    enabled: true
+    pattern_files:
+      - src/extraction/patterns/section_patterns.json
+      - src/extraction/patterns/date_patterns.json
+      - src/extraction/patterns/name_patterns.json
+      - src/extraction/patterns/work_patterns.json
+    max_work_experiences: 20
+    max_education_entries: 5
+  
+  openai:
+    enabled: true
+    model: gpt-4o
+    max_tokens: 16384
+    temperature: 0.1
+    retry_attempts: 3
+    timeout_seconds: 60
+    cache_enabled: false
+  
+  hybrid:
+    enabled: true
+    use_patterns_first: true
+    use_ai_for_ambiguous: true
+    pattern_confidence_threshold: 0.8
+    max_cost_per_cv: 0.05
+
+  comprehensive:
+    enabled: true
+    try_hybrid_first: true
+    try_openai_second: true
+    try_pattern_last: true
+    never_give_up: true
+
+transformation:
+  split_projects: true  # Split multiple projects under same employer into separate entries
+  one_project_per_entry: true  # Enforce one project per work_experience entry
+  
+  # Project detection criteria (generic indicators)
+  project_indicators:
+    - Different project names
+    - Different roles
+    - Different time periods
+    - Different clients
+
+validation:
+  enabled: true
+  auto_approve_threshold: 0.9
+  review_threshold: 0.7
+  reject_threshold: 0.5
+  
+  checks:
+    - name_validation
+    - birth_year_validation
+    - date_range_validation
+    - company_validation
+    - one_project_per_entry_validation
+
+edge_cases:
+  handle_missing_name: true
+  handle_malformed_json: true
+  handle_old_doc_format: true
+  handle_image_pdfs: true
+  
+  missing_name_fallback: filename  # filename | anonymous | skip
+  json_cleaning_enabled: true
+  
+logging:
+  level: INFO
+  log_strategy_selection: true
+  log_confidence_scores: true
+  log_validation_issues: true
+
+performance:
+  parallel_processing: false  # Future enhancement
+  max_concurrent: 4
+  timeout_per_cv: 120  # seconds
+
+# Work experience extraction sources (multi-section support)
+work_experience_sources:
+  primary_sections:
+    - Work Experience    # "Werkervaring", "Ervaring", "Work experience"
+    - Projects           # "Projecten", "Projects", "Enkele projecten"
+    - Career            # "Loopbaan", "Career"
+  
+  section_keywords:
+    # Dutch
+    - werkervaring
+    - ervaring
+    - projecten
+    - loopbaan
+    - relevante werkervaring
+    - enkele projecten
+    - uitgevoerde projecten
+    - project ervaring
+    # English
+    - work experience
+    - experience
+    - projects
+    - career
+    - employment history
+    - project history
+    - relevant experience
+
+api:
+  enabled: true
+  port: 8000
+  rate_limit_per_minute: 100
+  max_upload_size_mb: 50
+
+dashboard:
+  enabled: true
+  refresh_interval_seconds: 5
+  metrics_cache_minutes: 5
+
+feedback:
+  enabled: true
+  log_corrections: true
+  require_reason: false
+
+database:
+  type: sqlite  # or postgresql
+  sqlite_path: database/cv_automation.db
+  # For future PostgreSQL:
+  # host: localhost
+  # port: 5432
+  # database: cv_automation
+  # username: cv_user
+  # password: ${DB_PASSWORD}
+

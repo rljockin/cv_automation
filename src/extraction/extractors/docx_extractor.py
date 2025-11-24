@@ -65,8 +65,43 @@ class DOCXExtractor(BaseExtractor):
         
         with Timer("DOCX extraction") as timer:
             try:
-                # Open document
-                doc = Document(cv_file.file_path)
+                # Try to open document
+                try:
+                    doc = Document(cv_file.file_path)
+                except Exception as doc_error:
+                    # Generic handling for corrupted or misidentified files
+                    error_msg = str(doc_error).lower()
+                    
+                    # Check if it's a known corruption error
+                    if 'not a word file' in error_msg or 'thememanager' in error_msg or 'no relationship' in error_msg or 'package' in error_msg:
+                        self._log(f"File appears corrupted or old format, attempting workaround", "WARNING")
+                        
+                        # Try alternative: use text extraction from file bytes
+                        try:
+                            with open(cv_file.file_path, 'rb') as f:
+                                file_content = f.read()
+                            
+                            # Try to decode as text (simple fallback for corrupted files)
+                            try:
+                                text = file_content.decode('utf-8', errors='ignore')
+                            except:
+                                text = file_content.decode('latin-1', errors='ignore')
+                            
+                            # If we got some text, use it
+                            if len(text) > 100:
+                                self._log(f"Extracted {len(text)} chars using fallback method", "INFO")
+                                text = clean_text(text)
+                                
+                                return self._create_success_result(
+                                    text=text,
+                                    method=ExtractionMethod.DOCX,
+                                    extraction_time=0.0,
+                                )
+                        except Exception as fallback_error:
+                            self._log(f"Fallback extraction also failed: {fallback_error}", "WARNING")
+                    
+                    # If no workaround worked, raise original error
+                    raise doc_error
                 
                 # Extract text from multiple sources
                 text_parts = []
@@ -90,8 +125,13 @@ class DOCXExtractor(BaseExtractor):
                     # Shapes extraction is optional - don't fail if it doesn't work
                     pass
                 
-                # Combine all text
+                # Combine all text with proper line breaks
                 full_text = '\n'.join(text_parts)
+                
+                # Ensure we have proper line breaks between different content types
+                # This helps preserve the document structure for parsing
+                full_text = full_text.replace('  ', ' ')  # Clean up double spaces
+                full_text = full_text.replace('\n\n\n', '\n\n')  # Clean up triple line breaks
                 
                 # Clean the text
                 full_text = clean_text(full_text)
@@ -170,8 +210,8 @@ class DOCXExtractor(BaseExtractor):
                         row_texts.append(cell_text)
                 
                 if row_texts:
-                    # Join cells with separator
-                    table_texts.append(' | '.join(row_texts))
+                    # Join cells with separator and add line break
+                    table_texts.append(' | '.join(row_texts) + '\n')
         
         return table_texts
     
