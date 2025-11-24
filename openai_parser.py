@@ -677,8 +677,22 @@ IMPORTANT FOR PROFILE_SUMMARY:
             
             # Parse JSON response (handle markdown code blocks and explanations)
             try:
+                # Check if response looks like HTML (common error case)
+                if response_text.strip().startswith('<'):
+                    error_msg = f"OpenAI API returned HTML instead of JSON. This usually indicates an API error. Response preview: {response_text[:200]}"
+                    self.logger.error(error_msg)
+                    print(error_msg)
+                    return None
+                
                 # Clean JSON response generically
                 response_text = self._extract_json_safely(response_text)
+                
+                # Check again after cleaning
+                if not response_text or response_text.strip().startswith('<'):
+                    error_msg = "OpenAI API response could not be parsed as JSON. Response may be HTML or empty."
+                    self.logger.error(error_msg)
+                    print(error_msg)
+                    return None
                 
                 cv_data = json.loads(response_text)
                 print(f"JSON parsed successfully")
