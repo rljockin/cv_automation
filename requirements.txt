@@ -35,6 +35,7 @@ alembic==1.12.1                  # Database migrations
 jinja2==3.1.2                    # Template engine
 python-multipart==0.0.6          # Form data parsing
 flask==3.0.0                     # Web framework (for dashboard)
+gunicorn==21.2.0                 # Production WSGI server (optional, better than Flask dev server)
 
 # ============================================================================
 # Utilities

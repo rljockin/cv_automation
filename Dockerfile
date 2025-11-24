@@ -30,7 +30,7 @@ COPY . .
 RUN mkdir -p uploads output logs database data config && \
     chmod -R 755 uploads output logs database data config
 
-# Expose port (Railway will set PORT environment variable)
+# Expose port (Render will set PORT environment variable)
 EXPOSE 5000
 
 # Health check
@@ -38,5 +38,8 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:${PORT:-5000}/ || exit 1
 
 # Default command
-CMD ["python", "web_app.py"]
+# Use Gunicorn for production (better than Flask dev server)
+# Gunicorn handles multiple requests better and is more stable
+# PORT environment variable is set by Render automatically
+CMD gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 2 --timeout 120 --access-logfile - --error-logfile - web_app:app
 
