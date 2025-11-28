@@ -51,6 +51,9 @@ class TemplateResumeGeneratorV2:
             'right': 0.80   # inches
         }
         
+        # Track if we've customized the List Bullet numbering
+        self._list_bullet_customized = False
+        
     
     def generate_resume(self, cv_data: Dict, output_path: str) -> Dict:
         """Generate Resumé using template with proper table structure"""
@@ -546,39 +549,82 @@ class TemplateResumeGeneratorV2:
         
         return start_text or end_text or ""
     
+    def _customize_list_bullet_numbering(self, doc: Document) -> None:
+        """Customize the List Bullet numbering to have teal bullets."""
+        if self._list_bullet_customized:
+            return
+        
+        try:
+            from docx.oxml.ns import qn
+            
+            # Get numbering part
+            part = doc.part
+            numbering_part = part.numbering_part
+            numbering_xml = numbering_part.element
+            
+            # Find the abstract numbering used by List Bullet style
+            # List Bullet typically uses abstractNumId 1 or we need to find it
+            abstract_nums = numbering_xml.findall('.//w:abstractNum', namespaces={'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})
+            
+            for abstract_num in abstract_nums:
+                # Find level 0 (first level) in this abstract numbering
+                lvl = abstract_num.find('.//w:lvl[@w:ilvl="0"]', namespaces={'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})
+                if lvl is not None:
+                    # Check if this is a bullet format
+                    num_fmt = lvl.find('.//w:numFmt', namespaces={'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})
+                    if num_fmt is not None and num_fmt.get(qn('w:val')) == 'bullet':
+                        # Found bullet numbering - add teal color to run properties
+                        rpr = lvl.find('.//w:rPr', namespaces={'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})
+                        if rpr is None:
+                            # Create run properties if they don't exist
+                            from docx.oxml import OxmlElement
+                            rpr = OxmlElement('w:rPr')
+                            lvl.append(rpr)
+                        
+                        # Set bullet color to teal
+                        color = rpr.find('.//w:color', namespaces={'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})
+                        if color is None:
+                            from docx.oxml import OxmlElement
+                            color = OxmlElement('w:color')
+                            rpr.append(color)
+                        color.set(qn('w:val'), '00929F')  # Teal color
+                        
+                        self._list_bullet_customized = True
+                        break
+        except Exception as e:
+            print(f"Warning: Could not customize List Bullet numbering: {e}")
+            self._list_bullet_customized = False
+    
     def _render_responsibilities(self, doc: Document, right_cell, responsibilities: List[str], position: str, company: str) -> None:
-        """Render bullet list of responsibilities with teal bullets and black text."""
-        from docx.shared import Cm, Pt
+        """Render bullet list of responsibilities using Word's List Bullet style."""
+        from docx.shared import Pt
+        
+        # Customize List Bullet numbering to have teal bullets (only once)
+        self._customize_list_bullet_numbering(doc)
         
         cleaned_responsibilities = [resp for resp in responsibilities if resp]
         if cleaned_responsibilities:
             for resp in cleaned_responsibilities:
                 detailed_resp = self._expand_responsibility(resp, position, company)
                 detailed_resp = self._ensure_period_at_end(detailed_resp)
-                resp_para = right_cell.add_paragraph()
                 
-                # Set up proper bullet list formatting (indent for bullet)
-                resp_para.paragraph_format.left_indent = Cm(0.5)
-                resp_para.paragraph_format.first_line_indent = Cm(-0.5)
-                resp_para.paragraph_format.space_after = Pt(0)
+                # Add paragraph with List Bullet style for real bullet points
+                resp_para = right_cell.add_paragraph(detailed_resp, style='List Bullet')
                 
-                # Add bullet character with teal color (only the bullet, not the text)
-                bullet_run = resp_para.add_run("• ")
-                bullet_run.font.name = self.font_name
-                bullet_run.font.size = Pt(self.font_sizes['body_text'])
-                bullet_run.font.color.rgb = self.teal  # Only bullet is teal
-                
-                # Add the text with black color
-                text_run = resp_para.add_run(detailed_resp)
-                text_run.font.name = self.font_name
-                text_run.font.size = Pt(self.font_sizes['body_text'])
-                text_run.font.color.rgb = self.black  # Text is black
+                # Apply custom formatting to the paragraph runs (text should be black)
+                for run in resp_para.runs:
+                    run.font.name = self.font_name
+                    run.font.size = Pt(self.font_sizes['body_text'])
+                    run.font.color.rgb = self.black  # Text is black
         else:
             self._render_default_responsibilities(doc, right_cell, position, company, single=True)
     
     def _render_default_responsibilities(self, doc: Document, right_cell, position: str, company: str, single: bool = False) -> None:
-        """Render default responsibilities with teal bullets and black text."""
-        from docx.shared import Cm, Pt
+        """Render default responsibilities using Word's List Bullet style."""
+        from docx.shared import Pt
+        
+        # Customize List Bullet numbering to have teal bullets (only once)
+        self._customize_list_bullet_numbering(doc)
         
         position_text = position.lower() if position else "werkzaamheden"
         defaults = [
@@ -592,25 +638,16 @@ class TemplateResumeGeneratorV2:
         
         for default_text in defaults:
             default_text = self._ensure_period_at_end(default_text)
-            resp_para = right_cell.add_paragraph()
             
-            # Set up proper bullet list formatting (indent for bullet)
-            resp_para.paragraph_format.left_indent = Cm(0.5)
-            resp_para.paragraph_format.first_line_indent = Cm(-0.5)
-            resp_para.paragraph_format.space_after = Pt(0)
+            # Add paragraph with List Bullet style for real bullet points
+            resp_para = right_cell.add_paragraph(default_text, style='List Bullet')
             
-            # Add bullet character with teal color (only the bullet, not the text)
-            bullet_run = resp_para.add_run("• ")
-            bullet_run.font.name = self.font_name
-            bullet_run.font.size = Pt(self.font_sizes['body_text'])
-            bullet_run.font.color.rgb = self.teal  # Only bullet is teal
-            
-            # Add the text with black color
-            text_run = resp_para.add_run(default_text)
-            text_run.font.name = self.font_name
-            text_run.font.size = Pt(self.font_sizes['body_text'])
-            text_run.font.color.rgb = self.black  # Text is black
-            text_run.font.bold = False
+            # Apply custom formatting to the paragraph runs (text should be black)
+            for run in resp_para.runs:
+                run.font.name = self.font_name
+                run.font.size = Pt(self.font_sizes['body_text'])
+                run.font.color.rgb = self.black  # Text is black
+                run.font.bold = False
     
     def _add_werkervaring_tables(self, doc: Document, work_experience):
         """Add work experience section using proper table structure"""
