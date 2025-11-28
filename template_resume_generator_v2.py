@@ -811,9 +811,6 @@ class TemplateResumeGeneratorV2:
         right_cell = header_table.cell(0, 1)
         right_cell.text = ""
         
-        # Add empty paragraph
-        doc.add_paragraph()
-        
         # Add standard "Zelfstandig Ondernemer" entry as first work experience
         self._render_zelfstandig_ondernemer_entry(doc)
         
@@ -1058,9 +1055,6 @@ class TemplateResumeGeneratorV2:
         right_cell = header_table.cell(0, 1)
         right_cell.text = ""
         
-        # Add empty paragraph
-        doc.add_paragraph()
-        
         # Add education entries as a single table
         if education and isinstance(education, list):
             edu_table = doc.add_table(rows=len(education), cols=2)
@@ -1136,9 +1130,6 @@ class TemplateResumeGeneratorV2:
         # Right column empty
         right_cell = header_table.cell(0, 1)
         right_cell.text = ""
-        
-        # Add empty paragraph
-        doc.add_paragraph()
         
         # Add courses entries as a single table (same structure as education)
         if courses and isinstance(courses, list):
