@@ -1009,9 +1009,9 @@ class TemplateResumeGeneratorV2:
         work_table.cell(0, 0).width = Inches(1.2)
         work_table.cell(0, 1).width = Inches(5.8)
 
-        # Left column: Empty (no period)
+        # Left column: Placeholder period text (to be filled in manually)
         left_cell = work_table.cell(0, 0)
-        left_cell.text = ""
+        left_cell.text = "jaar-jaar"
         self._style_table_cell(left_cell, self.font_sizes['body_text'])
 
         # Right column: Company name, position, and "Enkele projecten:"
