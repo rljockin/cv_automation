@@ -50,6 +50,9 @@ class TemplateResumeGeneratorV2:
             'left': 0.93,   # inches
             'right': 0.80   # inches
         }
+        
+        # Track if numbering has been added to document
+        self._numbering_added = False
     
     def generate_resume(self, cv_data: Dict, output_path: str) -> Dict:
         """Generate Resumé using template with proper table structure"""
@@ -545,10 +548,96 @@ class TemplateResumeGeneratorV2:
         
         return start_text or end_text or ""
     
-    def _render_responsibilities(self, right_cell, responsibilities: List[str], position: str, company: str) -> None:
-        """Render bullet list of responsibilities or defaults."""
-        from docx.enum.text import WD_TAB_ALIGNMENT
+    def _add_bullet_numbering(self, doc: Document) -> None:
+        """Add bullet numbering definition to document if not already added."""
+        if self._numbering_added:
+            return
+        
+        from docx.oxml.ns import qn
+        from docx.oxml import OxmlElement
+        
+        # Get or create numbering part
+        part = doc.part
+        numbering_part = part.numbering_part
+        numbering = numbering_part.numbering_definitions
+        
+        # Check if bullet numbering already exists
+        for num in numbering.num_lst:
+            if num.numId == 1:
+                self._numbering_added = True
+                return
+        
+        # Create abstract numbering for bullets
+        abstract_num = OxmlElement('w:abstractNum')
+        abstract_num.set(qn('w:abstractNumId'), '0')
+        
+        # Create multi-level type
+        multi_level_type = OxmlElement('w:multiLevelType')
+        multi_level_type.set(qn('w:val'), 'hybridMultilevel')
+        abstract_num.append(multi_level_type)
+        
+        # Create level 0 (bullet level)
+        lvl = OxmlElement('w:lvl')
+        lvl.set(qn('w:ilvl'), '0')
+        
+        # Start numbering
+        start = OxmlElement('w:start')
+        start.set(qn('w:val'), '1')
+        lvl.append(start)
+        
+        # Number format (bullet)
+        num_fmt = OxmlElement('w:numFmt')
+        num_fmt.set(qn('w:val'), 'bullet')
+        lvl.append(num_fmt)
+        
+        # Level text (bullet character)
+        lvl_text = OxmlElement('w:lvlText')
+        lvl_text.set(qn('w:val'), '•')
+        lvl.append(lvl_text)
+        
+        # Level justification
+        lvl_jc = OxmlElement('w:lvlJc')
+        lvl_jc.set(qn('w:val'), 'left')
+        lvl.append(lvl_jc)
+        
+        # Paragraph properties
+        ppr = OxmlElement('w:pPr')
+        ind = OxmlElement('w:ind')
+        ind.set(qn('w:left'), '360')  # 0.25 inch
+        ind.set(qn('w:hanging'), '360')  # Hanging indent
+        ppr.append(ind)
+        lvl.append(ppr)
+        
+        # Run properties for bullet color
+        rpr = OxmlElement('w:rPr')
+        color = OxmlElement('w:color')
+        color.set(qn('w:val'), '00929F')  # Teal color
+        rpr.append(color)
+        lvl.append(rpr)
+        
+        abstract_num.append(lvl)
+        
+        # Add abstract numbering
+        numbering.append(abstract_num)
+        
+        # Create concrete numbering
+        num = OxmlElement('w:num')
+        num.set(qn('w:numId'), '1')
+        abstract_num_id = OxmlElement('w:abstractNumId')
+        abstract_num_id.set(qn('w:val'), '0')
+        num.append(abstract_num_id)
+        numbering.append(num)
+        
+        self._numbering_added = True
+    
+    def _render_responsibilities(self, doc: Document, right_cell, responsibilities: List[str], position: str, company: str) -> None:
+        """Render bullet list of responsibilities using proper Word bullet points."""
         from docx.shared import Cm, Pt
+        from docx.oxml.ns import qn
+        from docx.oxml import OxmlElement
+        
+        # Add bullet numbering to document (only once)
+        self._add_bullet_numbering(doc)
         
         cleaned_responsibilities = [resp for resp in responsibilities if resp]
         if cleaned_responsibilities:
@@ -556,27 +645,39 @@ class TemplateResumeGeneratorV2:
                 detailed_resp = self._expand_responsibility(resp, position, company)
                 detailed_resp = self._ensure_period_at_end(detailed_resp)
                 resp_para = right_cell.add_paragraph()
-                tab_stops = resp_para.paragraph_format.tab_stops
-                tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.LEFT)
+                
+                # Set up proper bullet list formatting
                 resp_para.paragraph_format.left_indent = Cm(0.5)
                 resp_para.paragraph_format.first_line_indent = Cm(-0.5)
+                resp_para.paragraph_format.space_after = Pt(0)
                 
-                bullet_run = resp_para.add_run("•\t")
-                bullet_run.font.name = self.font_name
-                bullet_run.font.size = Pt(self.font_sizes['body_text'])
-                bullet_run.font.color.rgb = self.teal
+                # Add numbering properties for bullet
+                pPr = resp_para._element.get_or_add_pPr()
+                numPr = OxmlElement('w:numPr')
+                ilvl = OxmlElement('w:ilvl')
+                ilvl.set(qn('w:val'), '0')
+                numId = OxmlElement('w:numId')
+                numId.set(qn('w:val'), '1')
+                numPr.append(ilvl)
+                numPr.append(numId)
+                pPr.append(numPr)
                 
+                # Add the text with proper formatting
                 text_run = resp_para.add_run(detailed_resp)
                 text_run.font.name = self.font_name
                 text_run.font.size = Pt(self.font_sizes['body_text'])
                 text_run.font.color.rgb = self.black
         else:
-            self._render_default_responsibilities(right_cell, position, company, single=True)
+            self._render_default_responsibilities(doc, right_cell, position, company, single=True)
     
-    def _render_default_responsibilities(self, right_cell, position: str, company: str, single: bool = False) -> None:
-        """Render default responsibilities when none are provided."""
-        from docx.enum.text import WD_TAB_ALIGNMENT
+    def _render_default_responsibilities(self, doc: Document, right_cell, position: str, company: str, single: bool = False) -> None:
+        """Render default responsibilities using proper Word bullet points."""
         from docx.shared import Cm, Pt
+        from docx.oxml.ns import qn
+        from docx.oxml import OxmlElement
+        
+        # Add bullet numbering to document (only once)
+        self._add_bullet_numbering(doc)
         
         position_text = position.lower() if position else "werkzaamheden"
         defaults = [
@@ -591,16 +692,24 @@ class TemplateResumeGeneratorV2:
         for default_text in defaults:
             default_text = self._ensure_period_at_end(default_text)
             resp_para = right_cell.add_paragraph()
-            tab_stops = resp_para.paragraph_format.tab_stops
-            tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.LEFT)
+            
+            # Set up proper bullet list formatting
             resp_para.paragraph_format.left_indent = Cm(0.5)
             resp_para.paragraph_format.first_line_indent = Cm(-0.5)
+            resp_para.paragraph_format.space_after = Pt(0)
             
-            bullet_run = resp_para.add_run("•\t")
-            bullet_run.font.name = self.font_name
-            bullet_run.font.size = Pt(self.font_sizes['body_text'])
-            bullet_run.font.color.rgb = self.teal
+            # Add numbering properties for bullet
+            pPr = resp_para._element.get_or_add_pPr()
+            numPr = OxmlElement('w:numPr')
+            ilvl = OxmlElement('w:ilvl')
+            ilvl.set(qn('w:val'), '0')
+            numId = OxmlElement('w:numId')
+            numId.set(qn('w:val'), '1')
+            numPr.append(ilvl)
+            numPr.append(numId)
+            pPr.append(numPr)
             
+            # Add the text with proper formatting
             text_run = resp_para.add_run(default_text)
             text_run.font.name = self.font_name
             text_run.font.size = Pt(self.font_sizes['body_text'])
@@ -736,7 +845,7 @@ class TemplateResumeGeneratorV2:
                 position_run.font.bold = True
 
             responsibilities = item.get('responsibilities', [])
-            self._render_responsibilities(project_right_cell, responsibilities, position_text, company_display)
+            self._render_responsibilities(doc, project_right_cell, responsibilities, position_text, company_display)
 
         doc.add_paragraph()
 
@@ -792,7 +901,7 @@ class TemplateResumeGeneratorV2:
             position_run.font.bold = True
 
         responsibilities = item.get('responsibilities', [])
-        self._render_responsibilities(right_cell, responsibilities, position_text, company_display)
+        self._render_responsibilities(doc, right_cell, responsibilities, position_text, company_display)
 
         doc.add_paragraph()
     
