@@ -535,12 +535,41 @@ class TemplateResumeGeneratorV2:
         start_year = self._extract_year_number(start_date)
         end_year = self._extract_year_number(end_date)
         
-        start_text = str(start_year) if start_year else (start_date[:4] if start_date else "")
+        # Get start text - prefer extracted year, otherwise try to get first 4 chars if available
+        if start_year:
+            start_text = str(start_year)
+        elif start_date and len(start_date) >= 4:
+            # Try to extract first 4 characters as year
+            start_text = start_date[:4]
+        elif start_date and len(start_date) == 2 and start_date.isdigit():
+            # Handle 2-digit year (e.g., "20" -> "2020")
+            year_int = int(start_date)
+            if year_int >= 0 and year_int <= 99:
+                # Assume 2000s for years 0-99
+                start_text = f"20{start_date.zfill(2)}"
+            else:
+                start_text = start_date
+        else:
+            start_text = start_date if start_date else ""
+        
+        # Get end text
         end_text: Optional[str]
         if is_current or not end_date:
             end_text = "Heden"
+        elif end_year:
+            end_text = str(end_year)
+        elif end_date and len(end_date) >= 4:
+            end_text = end_date[:4]
+        elif end_date and len(end_date) == 2 and end_date.isdigit():
+            # Handle 2-digit year (e.g., "20" -> "2020")
+            year_int = int(end_date)
+            if year_int >= 0 and year_int <= 99:
+                # Assume 2000s for years 0-99
+                end_text = f"20{end_date.zfill(2)}"
+            else:
+                end_text = end_date
         else:
-            end_text = str(end_year) if end_year else (end_date[:4] if end_date else "")
+            end_text = end_date if end_date else ""
         
         if start_text and end_text and start_text == end_text:
             return start_text
