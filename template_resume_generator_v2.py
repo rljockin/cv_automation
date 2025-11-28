@@ -557,24 +557,18 @@ class TemplateResumeGeneratorV2:
             from docx.oxml.ns import qn
             from docx.oxml import OxmlElement
             
-            # Get or create numbering part
+            # Get numbering part and access the XML element directly
             part = doc.part
             numbering_part = part.numbering_part
-            numbering = numbering_part.numbering_definitions
+            numbering_xml = numbering_part.element  # Access the XML element directly
             
-            # Try to check if numbering already exists by accessing the element directly
-            try:
-                # Check if numId 1 already exists by looking at the XML
-                numbering_xml = numbering._element
-                existing_nums = numbering_xml.findall('.//w:num', namespaces={'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})
-                for num_elem in existing_nums:
-                    num_id = num_elem.get(qn('w:numId'))
-                    if num_id == '1':
-                        self._numbering_added = True
-                        return
-            except:
-                # If check fails, just continue to add numbering
-                pass
+            # Check if numId 1 already exists
+            existing_nums = numbering_xml.findall('.//w:num', namespaces={'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})
+            for num_elem in existing_nums:
+                num_id = num_elem.get(qn('w:numId'))
+                if num_id == '1':
+                    self._numbering_added = True
+                    return
             
             # Create abstract numbering for bullets
             abstract_num = OxmlElement('w:abstractNum')
@@ -626,8 +620,8 @@ class TemplateResumeGeneratorV2:
             
             abstract_num.append(lvl)
             
-            # Add abstract numbering
-            numbering.append(abstract_num)
+            # Add abstract numbering directly to XML element
+            numbering_xml.append(abstract_num)
             
             # Create concrete numbering
             num = OxmlElement('w:num')
@@ -635,7 +629,9 @@ class TemplateResumeGeneratorV2:
             abstract_num_id = OxmlElement('w:abstractNumId')
             abstract_num_id.set(qn('w:val'), '0')
             num.append(abstract_num_id)
-            numbering.append(num)
+            
+            # Add concrete numbering directly to XML element
+            numbering_xml.append(num)
             
             self._numbering_added = True
         except Exception as e:
