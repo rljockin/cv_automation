@@ -53,7 +53,7 @@ class TemplateResumeGeneratorV2:
         
         # Track if bullet numbering definition has been created
         self._bullet_numbering_created = False
-        self._bullet_num_id = 1  # ID for our custom bullet numbering
+        self._bullet_num_id = None  # Will be set dynamically to avoid conflicts
         
     
     def generate_resume(self, cv_data: Dict, output_path: str) -> Dict:
@@ -564,8 +564,21 @@ class TemplateResumeGeneratorV2:
             numbering_part = part.numbering_part
             numbering_xml = numbering_part.element
             
-            # Check if our numbering already exists
+            # Find the highest numId to avoid conflicts
             existing_nums = numbering_xml.findall('.//w:num', namespaces={'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})
+            max_num_id = 0
+            for num_elem in existing_nums:
+                num_id = num_elem.get(qn('w:numId'))
+                if num_id:
+                    try:
+                        max_num_id = max(max_num_id, int(num_id))
+                    except:
+                        pass
+            
+            # Use a high numId to avoid conflicts (start from 1000)
+            self._bullet_num_id = max(1000, max_num_id + 1)
+            
+            # Check if our numbering already exists
             for num_elem in existing_nums:
                 num_id = num_elem.get(qn('w:numId'))
                 if num_id == str(self._bullet_num_id):
@@ -589,28 +602,23 @@ class TemplateResumeGeneratorV2:
             abstract_num = OxmlElement('w:abstractNum')
             abstract_num.set(qn('w:abstractNumId'), str(abstract_num_id))
             
-            # Multi-level type
+            # Multi-level type - use singleLevel for simple bullets
             multi_level_type = OxmlElement('w:multiLevelType')
-            multi_level_type.set(qn('w:val'), 'hybridMultilevel')
+            multi_level_type.set(qn('w:val'), 'singleLevel')
             abstract_num.append(multi_level_type)
             
             # Create level 0 (bullet level)
             lvl = OxmlElement('w:lvl')
             lvl.set(qn('w:ilvl'), '0')
             
-            # Start numbering
-            start = OxmlElement('w:start')
-            start.set(qn('w:val'), '1')
-            lvl.append(start)
-            
-            # Number format (bullet, not numbering!)
+            # Number format MUST come first - set to bullet (not decimal or other)
             num_fmt = OxmlElement('w:numFmt')
-            num_fmt.set(qn('w:val'), 'bullet')
+            num_fmt.set(qn('w:val'), 'bullet')  # This is critical - must be 'bullet'
             lvl.append(num_fmt)
             
-            # Level text (bullet character)
+            # Level text (bullet character) - must come after numFmt
             lvl_text = OxmlElement('w:lvlText')
-            lvl_text.set(qn('w:val'), '•')
+            lvl_text.set(qn('w:val'), '•')  # Bullet character
             lvl.append(lvl_text)
             
             # Level justification
@@ -672,7 +680,7 @@ class TemplateResumeGeneratorV2:
                 detailed_resp = self._expand_responsibility(resp, position, company)
                 detailed_resp = self._ensure_period_at_end(detailed_resp)
                 
-                if self._bullet_numbering_created:
+                if self._bullet_numbering_created and self._bullet_num_id is not None:
                     # Create paragraph
                     resp_para = right_cell.add_paragraph()
                     
@@ -680,15 +688,15 @@ class TemplateResumeGeneratorV2:
                     pPr = resp_para._element.get_or_add_pPr()
                     numPr = OxmlElement('w:numPr')
                     
-                    # Set indent level
-                    ilvl = OxmlElement('w:ilvl')
-                    ilvl.set(qn('w:val'), '0')
-                    numPr.append(ilvl)
-                    
-                    # Set numbering ID (references our bullet numbering)
+                    # Set numbering ID FIRST (references our bullet numbering)
                     numId = OxmlElement('w:numId')
                     numId.set(qn('w:val'), str(self._bullet_num_id))
                     numPr.append(numId)
+                    
+                    # Set indent level SECOND
+                    ilvl = OxmlElement('w:ilvl')
+                    ilvl.set(qn('w:val'), '0')
+                    numPr.append(ilvl)
                     
                     pPr.append(numPr)
                     
@@ -748,7 +756,7 @@ class TemplateResumeGeneratorV2:
         for default_text in defaults:
             default_text = self._ensure_period_at_end(default_text)
             
-            if self._bullet_numbering_created:
+            if self._bullet_numbering_created and self._bullet_num_id is not None:
                 # Create paragraph
                 resp_para = right_cell.add_paragraph()
                 
@@ -756,15 +764,15 @@ class TemplateResumeGeneratorV2:
                 pPr = resp_para._element.get_or_add_pPr()
                 numPr = OxmlElement('w:numPr')
                 
-                # Set indent level
-                ilvl = OxmlElement('w:ilvl')
-                ilvl.set(qn('w:val'), '0')
-                numPr.append(ilvl)
-                
-                # Set numbering ID (references our bullet numbering)
+                # Set numbering ID FIRST (references our bullet numbering)
                 numId = OxmlElement('w:numId')
                 numId.set(qn('w:val'), str(self._bullet_num_id))
                 numPr.append(numId)
+                
+                # Set indent level SECOND
+                ilvl = OxmlElement('w:ilvl')
+                ilvl.set(qn('w:val'), '0')
+                numPr.append(ilvl)
                 
                 pPr.append(numPr)
                 
