@@ -51,8 +51,9 @@ class TemplateResumeGeneratorV2:
             'right': 0.80   # inches
         }
         
-        # Track if we've customized the List Bullet numbering
-        self._list_bullet_customized = False
+        # Track if bullet numbering definition has been created
+        self._bullet_numbering_created = False
+        self._bullet_num_id = 1  # ID for our custom bullet numbering
         
     
     def generate_resume(self, cv_data: Dict, output_path: str) -> Dict:
@@ -549,84 +550,121 @@ class TemplateResumeGeneratorV2:
         
         return start_text or end_text or ""
     
-    def _ensure_list_bullet_style(self, doc: Document) -> bool:
-        """Ensure List Bullet style exists in document, create if needed."""
-        try:
-            # Try to access the style - this will raise KeyError if it doesn't exist
-            try:
-                style = doc.styles['List Bullet']
-                return True
-            except KeyError:
-                # Style doesn't exist, try to initialize it by adding and removing a paragraph
-                try:
-                    # Add a temporary paragraph with List Bullet style to initialize it
-                    temp_para = doc.add_paragraph('', style='List Bullet')
-                    # Remove the paragraph content but keep the style initialized
-                    temp_para.clear()
-                    return True
-                except:
-                    # If that fails, the style might not be available in this document
-                    return False
-        except Exception as e:
-            print(f"Warning: Could not ensure List Bullet style: {e}")
-            return False
-    
-    def _customize_list_bullet_numbering(self, doc: Document) -> None:
-        """Customize the List Bullet numbering to have teal bullets."""
-        if self._list_bullet_customized:
+    def _create_bullet_numbering_definition(self, doc: Document) -> None:
+        """Create a complete bullet numbering definition with teal bullets."""
+        if self._bullet_numbering_created:
             return
         
         try:
             from docx.oxml.ns import qn
+            from docx.oxml import OxmlElement
             
             # Get numbering part
             part = doc.part
             numbering_part = part.numbering_part
             numbering_xml = numbering_part.element
             
-            # Find the abstract numbering used by List Bullet style
-            # List Bullet typically uses abstractNumId 1 or we need to find it
-            abstract_nums = numbering_xml.findall('.//w:abstractNum', namespaces={'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})
+            # Check if our numbering already exists
+            existing_nums = numbering_xml.findall('.//w:num', namespaces={'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})
+            for num_elem in existing_nums:
+                num_id = num_elem.get(qn('w:numId'))
+                if num_id == str(self._bullet_num_id):
+                    self._bullet_numbering_created = True
+                    return
             
+            # Find the highest abstractNumId to avoid conflicts
+            abstract_nums = numbering_xml.findall('.//w:abstractNum', namespaces={'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})
+            max_abstract_id = -1
             for abstract_num in abstract_nums:
-                # Find level 0 (first level) in this abstract numbering
-                lvl = abstract_num.find('.//w:lvl[@w:ilvl="0"]', namespaces={'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})
-                if lvl is not None:
-                    # Check if this is a bullet format
-                    num_fmt = lvl.find('.//w:numFmt', namespaces={'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})
-                    if num_fmt is not None and num_fmt.get(qn('w:val')) == 'bullet':
-                        # Found bullet numbering - add teal color to run properties
-                        rpr = lvl.find('.//w:rPr', namespaces={'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})
-                        if rpr is None:
-                            # Create run properties if they don't exist
-                            from docx.oxml import OxmlElement
-                            rpr = OxmlElement('w:rPr')
-                            lvl.append(rpr)
-                        
-                        # Set bullet color to teal
-                        color = rpr.find('.//w:color', namespaces={'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})
-                        if color is None:
-                            from docx.oxml import OxmlElement
-                            color = OxmlElement('w:color')
-                            rpr.append(color)
-                        color.set(qn('w:val'), '00929F')  # Teal color
-                        
-                        self._list_bullet_customized = True
-                        break
+                abstract_id = abstract_num.get(qn('w:abstractNumId'))
+                if abstract_id:
+                    try:
+                        max_abstract_id = max(max_abstract_id, int(abstract_id))
+                    except:
+                        pass
+            
+            abstract_num_id = max_abstract_id + 1
+            
+            # Create abstract numbering for bullets
+            abstract_num = OxmlElement('w:abstractNum')
+            abstract_num.set(qn('w:abstractNumId'), str(abstract_num_id))
+            
+            # Multi-level type
+            multi_level_type = OxmlElement('w:multiLevelType')
+            multi_level_type.set(qn('w:val'), 'hybridMultilevel')
+            abstract_num.append(multi_level_type)
+            
+            # Create level 0 (bullet level)
+            lvl = OxmlElement('w:lvl')
+            lvl.set(qn('w:ilvl'), '0')
+            
+            # Start numbering
+            start = OxmlElement('w:start')
+            start.set(qn('w:val'), '1')
+            lvl.append(start)
+            
+            # Number format (bullet, not numbering!)
+            num_fmt = OxmlElement('w:numFmt')
+            num_fmt.set(qn('w:val'), 'bullet')
+            lvl.append(num_fmt)
+            
+            # Level text (bullet character)
+            lvl_text = OxmlElement('w:lvlText')
+            lvl_text.set(qn('w:val'), '•')
+            lvl.append(lvl_text)
+            
+            # Level justification
+            lvl_jc = OxmlElement('w:lvlJc')
+            lvl_jc.set(qn('w:val'), 'left')
+            lvl.append(lvl_jc)
+            
+            # Paragraph properties with indent
+            ppr = OxmlElement('w:pPr')
+            ind = OxmlElement('w:ind')
+            ind.set(qn('w:left'), '360')  # 0.25 inch
+            ind.set(qn('w:hanging'), '360')  # Hanging indent for bullet
+            ppr.append(ind)
+            lvl.append(ppr)
+            
+            # Run properties for bullet color (TEAL - only affects bullet, not text)
+            rpr = OxmlElement('w:rPr')
+            color = OxmlElement('w:color')
+            color.set(qn('w:val'), '00929F')  # Teal color (#00929F)
+            rpr.append(color)
+            lvl.append(rpr)
+            
+            abstract_num.append(lvl)
+            
+            # Add abstract numbering to document
+            numbering_xml.append(abstract_num)
+            
+            # Create concrete numbering that references abstract numbering
+            num = OxmlElement('w:num')
+            num.set(qn('w:numId'), str(self._bullet_num_id))
+            abstract_num_id_elem = OxmlElement('w:abstractNumId')
+            abstract_num_id_elem.set(qn('w:val'), str(abstract_num_id))
+            num.append(abstract_num_id_elem)
+            
+            # Add concrete numbering to document
+            numbering_xml.append(num)
+            
+            self._bullet_numbering_created = True
+            print("Bullet numbering definition created successfully")
+            
         except Exception as e:
-            print(f"Warning: Could not customize List Bullet numbering: {e}")
-            self._list_bullet_customized = False
+            print(f"Warning: Could not create bullet numbering definition: {e}")
+            import traceback
+            traceback.print_exc()
+            self._bullet_numbering_created = False
     
     def _render_responsibilities(self, doc: Document, right_cell, responsibilities: List[str], position: str, company: str) -> None:
-        """Render bullet list of responsibilities using Word's List Bullet style."""
-        from docx.shared import Cm, Pt
+        """Render bullet list of responsibilities using real Word bullet points."""
+        from docx.shared import Pt
+        from docx.oxml.ns import qn
+        from docx.oxml import OxmlElement
         
-        # Ensure List Bullet style exists
-        list_bullet_available = self._ensure_list_bullet_style(doc)
-        
-        # Customize List Bullet numbering to have teal bullets (only once)
-        if list_bullet_available:
-            self._customize_list_bullet_numbering(doc)
+        # Create bullet numbering definition (only once per document)
+        self._create_bullet_numbering_definition(doc)
         
         cleaned_responsibilities = [resp for resp in responsibilities if resp]
         if cleaned_responsibilities:
@@ -634,22 +672,33 @@ class TemplateResumeGeneratorV2:
                 detailed_resp = self._expand_responsibility(resp, position, company)
                 detailed_resp = self._ensure_period_at_end(detailed_resp)
                 
-                if list_bullet_available:
-                    try:
-                        # Add paragraph with List Bullet style for real bullet points
-                        resp_para = right_cell.add_paragraph(detailed_resp, style='List Bullet')
-                        
-                        # Apply custom formatting to the paragraph runs (text should be black)
-                        for run in resp_para.runs:
-                            run.font.name = self.font_name
-                            run.font.size = Pt(self.font_sizes['body_text'])
-                            run.font.color.rgb = self.black  # Text is black
-                    except:
-                        # Fallback if style fails
-                        list_bullet_available = False
-                        self._render_bullet_fallback(right_cell, detailed_resp)
+                if self._bullet_numbering_created:
+                    # Create paragraph
+                    resp_para = right_cell.add_paragraph()
+                    
+                    # Add numbering properties to make it a bullet point
+                    pPr = resp_para._element.get_or_add_pPr()
+                    numPr = OxmlElement('w:numPr')
+                    
+                    # Set indent level
+                    ilvl = OxmlElement('w:ilvl')
+                    ilvl.set(qn('w:val'), '0')
+                    numPr.append(ilvl)
+                    
+                    # Set numbering ID (references our bullet numbering)
+                    numId = OxmlElement('w:numId')
+                    numId.set(qn('w:val'), str(self._bullet_num_id))
+                    numPr.append(numId)
+                    
+                    pPr.append(numPr)
+                    
+                    # Add the text with black color (bullet color is set in numbering definition)
+                    text_run = resp_para.add_run(detailed_resp)
+                    text_run.font.name = self.font_name
+                    text_run.font.size = Pt(self.font_sizes['body_text'])
+                    text_run.font.color.rgb = self.black  # Text is black
                 else:
-                    # Fallback: use simple bullet approach
+                    # Fallback if numbering creation failed
                     self._render_bullet_fallback(right_cell, detailed_resp)
         else:
             self._render_default_responsibilities(doc, right_cell, position, company, single=True)
@@ -678,15 +727,13 @@ class TemplateResumeGeneratorV2:
         text_run.font.color.rgb = self.black  # Text is black
     
     def _render_default_responsibilities(self, doc: Document, right_cell, position: str, company: str, single: bool = False) -> None:
-        """Render default responsibilities using Word's List Bullet style."""
+        """Render default responsibilities using real Word bullet points."""
         from docx.shared import Pt
+        from docx.oxml.ns import qn
+        from docx.oxml import OxmlElement
         
-        # Ensure List Bullet style exists
-        list_bullet_available = self._ensure_list_bullet_style(doc)
-        
-        # Customize List Bullet numbering to have teal bullets (only once)
-        if list_bullet_available:
-            self._customize_list_bullet_numbering(doc)
+        # Create bullet numbering definition (only once per document)
+        self._create_bullet_numbering_definition(doc)
         
         position_text = position.lower() if position else "werkzaamheden"
         defaults = [
@@ -701,22 +748,34 @@ class TemplateResumeGeneratorV2:
         for default_text in defaults:
             default_text = self._ensure_period_at_end(default_text)
             
-            if list_bullet_available:
-                try:
-                    # Add paragraph with List Bullet style for real bullet points
-                    resp_para = right_cell.add_paragraph(default_text, style='List Bullet')
-                    
-                    # Apply custom formatting to the paragraph runs (text should be black)
-                    for run in resp_para.runs:
-                        run.font.name = self.font_name
-                        run.font.size = Pt(self.font_sizes['body_text'])
-                        run.font.color.rgb = self.black  # Text is black
-                        run.font.bold = False
-                except:
-                    # Fallback if style fails
-                    self._render_bullet_fallback(right_cell, default_text)
+            if self._bullet_numbering_created:
+                # Create paragraph
+                resp_para = right_cell.add_paragraph()
+                
+                # Add numbering properties to make it a bullet point
+                pPr = resp_para._element.get_or_add_pPr()
+                numPr = OxmlElement('w:numPr')
+                
+                # Set indent level
+                ilvl = OxmlElement('w:ilvl')
+                ilvl.set(qn('w:val'), '0')
+                numPr.append(ilvl)
+                
+                # Set numbering ID (references our bullet numbering)
+                numId = OxmlElement('w:numId')
+                numId.set(qn('w:val'), str(self._bullet_num_id))
+                numPr.append(numId)
+                
+                pPr.append(numPr)
+                
+                # Add the text with black color (bullet color is set in numbering definition)
+                text_run = resp_para.add_run(default_text)
+                text_run.font.name = self.font_name
+                text_run.font.size = Pt(self.font_sizes['body_text'])
+                text_run.font.color.rgb = self.black  # Text is black
+                text_run.font.bold = False
             else:
-                # Fallback: use simple bullet approach
+                # Fallback if numbering creation failed
                 self._render_bullet_fallback(right_cell, default_text)
     
     def _add_werkervaring_tables(self, doc: Document, work_experience):
