@@ -549,6 +549,28 @@ class TemplateResumeGeneratorV2:
         
         return start_text or end_text or ""
     
+    def _ensure_list_bullet_style(self, doc: Document) -> bool:
+        """Ensure List Bullet style exists in document, create if needed."""
+        try:
+            # Try to access the style - this will raise KeyError if it doesn't exist
+            try:
+                style = doc.styles['List Bullet']
+                return True
+            except KeyError:
+                # Style doesn't exist, try to initialize it by adding and removing a paragraph
+                try:
+                    # Add a temporary paragraph with List Bullet style to initialize it
+                    temp_para = doc.add_paragraph('', style='List Bullet')
+                    # Remove the paragraph content but keep the style initialized
+                    temp_para.clear()
+                    return True
+                except:
+                    # If that fails, the style might not be available in this document
+                    return False
+        except Exception as e:
+            print(f"Warning: Could not ensure List Bullet style: {e}")
+            return False
+    
     def _customize_list_bullet_numbering(self, doc: Document) -> None:
         """Customize the List Bullet numbering to have teal bullets."""
         if self._list_bullet_customized:
@@ -597,10 +619,14 @@ class TemplateResumeGeneratorV2:
     
     def _render_responsibilities(self, doc: Document, right_cell, responsibilities: List[str], position: str, company: str) -> None:
         """Render bullet list of responsibilities using Word's List Bullet style."""
-        from docx.shared import Pt
+        from docx.shared import Cm, Pt
+        
+        # Ensure List Bullet style exists
+        list_bullet_available = self._ensure_list_bullet_style(doc)
         
         # Customize List Bullet numbering to have teal bullets (only once)
-        self._customize_list_bullet_numbering(doc)
+        if list_bullet_available:
+            self._customize_list_bullet_numbering(doc)
         
         cleaned_responsibilities = [resp for resp in responsibilities if resp]
         if cleaned_responsibilities:
@@ -608,23 +634,59 @@ class TemplateResumeGeneratorV2:
                 detailed_resp = self._expand_responsibility(resp, position, company)
                 detailed_resp = self._ensure_period_at_end(detailed_resp)
                 
-                # Add paragraph with List Bullet style for real bullet points
-                resp_para = right_cell.add_paragraph(detailed_resp, style='List Bullet')
-                
-                # Apply custom formatting to the paragraph runs (text should be black)
-                for run in resp_para.runs:
-                    run.font.name = self.font_name
-                    run.font.size = Pt(self.font_sizes['body_text'])
-                    run.font.color.rgb = self.black  # Text is black
+                if list_bullet_available:
+                    try:
+                        # Add paragraph with List Bullet style for real bullet points
+                        resp_para = right_cell.add_paragraph(detailed_resp, style='List Bullet')
+                        
+                        # Apply custom formatting to the paragraph runs (text should be black)
+                        for run in resp_para.runs:
+                            run.font.name = self.font_name
+                            run.font.size = Pt(self.font_sizes['body_text'])
+                            run.font.color.rgb = self.black  # Text is black
+                    except:
+                        # Fallback if style fails
+                        list_bullet_available = False
+                        self._render_bullet_fallback(right_cell, detailed_resp)
+                else:
+                    # Fallback: use simple bullet approach
+                    self._render_bullet_fallback(right_cell, detailed_resp)
         else:
             self._render_default_responsibilities(doc, right_cell, position, company, single=True)
+    
+    def _render_bullet_fallback(self, right_cell, text: str) -> None:
+        """Fallback method to render bullet with teal bullet and black text."""
+        from docx.shared import Cm, Pt
+        
+        resp_para = right_cell.add_paragraph()
+        
+        # Set up proper bullet list formatting (indent for bullet)
+        resp_para.paragraph_format.left_indent = Cm(0.5)
+        resp_para.paragraph_format.first_line_indent = Cm(-0.5)
+        resp_para.paragraph_format.space_after = Pt(0)
+        
+        # Add bullet character with teal color (only the bullet, not the text)
+        bullet_run = resp_para.add_run("• ")
+        bullet_run.font.name = self.font_name
+        bullet_run.font.size = Pt(self.font_sizes['body_text'])
+        bullet_run.font.color.rgb = self.teal  # Only bullet is teal
+        
+        # Add the text with black color
+        text_run = resp_para.add_run(text)
+        text_run.font.name = self.font_name
+        text_run.font.size = Pt(self.font_sizes['body_text'])
+        text_run.font.color.rgb = self.black  # Text is black
     
     def _render_default_responsibilities(self, doc: Document, right_cell, position: str, company: str, single: bool = False) -> None:
         """Render default responsibilities using Word's List Bullet style."""
         from docx.shared import Pt
         
+        # Ensure List Bullet style exists
+        list_bullet_available = self._ensure_list_bullet_style(doc)
+        
         # Customize List Bullet numbering to have teal bullets (only once)
-        self._customize_list_bullet_numbering(doc)
+        if list_bullet_available:
+            self._customize_list_bullet_numbering(doc)
         
         position_text = position.lower() if position else "werkzaamheden"
         defaults = [
@@ -639,15 +701,23 @@ class TemplateResumeGeneratorV2:
         for default_text in defaults:
             default_text = self._ensure_period_at_end(default_text)
             
-            # Add paragraph with List Bullet style for real bullet points
-            resp_para = right_cell.add_paragraph(default_text, style='List Bullet')
-            
-            # Apply custom formatting to the paragraph runs (text should be black)
-            for run in resp_para.runs:
-                run.font.name = self.font_name
-                run.font.size = Pt(self.font_sizes['body_text'])
-                run.font.color.rgb = self.black  # Text is black
-                run.font.bold = False
+            if list_bullet_available:
+                try:
+                    # Add paragraph with List Bullet style for real bullet points
+                    resp_para = right_cell.add_paragraph(default_text, style='List Bullet')
+                    
+                    # Apply custom formatting to the paragraph runs (text should be black)
+                    for run in resp_para.runs:
+                        run.font.name = self.font_name
+                        run.font.size = Pt(self.font_sizes['body_text'])
+                        run.font.color.rgb = self.black  # Text is black
+                        run.font.bold = False
+                except:
+                    # Fallback if style fails
+                    self._render_bullet_fallback(right_cell, default_text)
+            else:
+                # Fallback: use simple bullet approach
+                self._render_bullet_fallback(right_cell, default_text)
     
     def _add_werkervaring_tables(self, doc: Document, work_experience):
         """Add work experience section using proper table structure"""
